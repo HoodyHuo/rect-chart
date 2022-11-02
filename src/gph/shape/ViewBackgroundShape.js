@@ -54,7 +54,6 @@ class ViewBackgroundShape extends zrender.Path {
             style.lineDashOffset++
           }
           this.attr('style', style)
-          console.log('update selected')
         }, 50)
       } else {
         clearInterval(this.selectedAnimate)

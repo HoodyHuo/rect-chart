@@ -1,68 +1,72 @@
 <template>
   <div class="hello">
-  <zrender-flow class="content" @select="ccc" :nodes="nodeList"/>
+    <zrender-flow
+      class="content"
+      :nodes="nodeList"
+      @select="ccc"
+    />
   </div>
 </template>
 
 <script>
-import ZrenderFlow from "@/gph/zrender-flow";
+import ZrenderFlow from '@/gph/zrender-flow'
 export default {
   name: 'HelloWorld',
-  components: {ZrenderFlow},
-  data(){
+  components: { ZrenderFlow },
+  props: {
+    msg: String
+  },
+  data() {
     return {
       nodeList: [
         {
-          x:150,
+          x: 150,
           y: 100,
           width: 200,
           height: 100,
-          name: "zrender1",
-          target:{
-            name: "zrender1",
-            age: 50,
+          name: 'zrender1',
+          target: {
+            name: 'zrender1',
+            age: 50
           }
-        },{
-          x:80,
+        }, {
+          x: 80,
           y: 50,
           width: 200,
           height: 100,
-          name: "zrender2",
-          target:{
-            name: "zrender2",
-            age: 20,
+          name: 'zrender2',
+          target: {
+            name: 'zrender2',
+            age: 20
           }
-        },{
-          x:90,
+        }, {
+          x: 90,
           y: 150,
           width: 200,
           height: 100,
-          name: "zrender3",
-          target:{
-            name: "zrender3",
-            age: 20,
+          name: 'zrender3',
+          target: {
+            name: 'zrender3',
+            age: 20
           }
-        },{
-          x:30,
+        }, {
+          x: 30,
           y: 100,
           width: 200,
           height: 100,
-          name: "zrender4",
-          target:{
-            name: "zrender4",
-            age: 20,
+          name: 'zrender4',
+          target: {
+            name: 'zrender4',
+            age: 20
           }
         }
       ]
     }
   },
-  props: {
-    msg: String
-  },
-  methods:{
+  methods: {
     // eslint-disable-next-line no-unused-vars
-    ccc(event,target){
-      console.log(JSON.stringify(target)+"-click")
+    ccc(event, target) {
+      console.log(JSON.stringify(target) + '-click')
     }
   }
 }
