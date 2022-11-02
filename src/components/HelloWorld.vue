@@ -24,12 +24,32 @@ export default {
           }
         },{
           x:80,
-          y: 100,
+          y: 50,
           width: 200,
           height: 100,
           name: "zrender2",
           target:{
             name: "zrender2",
+            age: 20,
+          }
+        },{
+          x:90,
+          y: 150,
+          width: 200,
+          height: 100,
+          name: "zrender3",
+          target:{
+            name: "zrender3",
+            age: 20,
+          }
+        },{
+          x:30,
+          y: 100,
+          width: 200,
+          height: 100,
+          name: "zrender4",
+          target:{
+            name: "zrender4",
             age: 20,
           }
         }
