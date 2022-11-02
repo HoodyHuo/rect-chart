@@ -1,33 +1,11 @@
 const zrender = require('zrender')
-
-// eslint-disable-next-line no-unused-vars
-const linearColor = new zrender.LinearGradient(0, 0, 0, 1, [
-  {
-    offset: 0,
-    color: '#efe3ff'
-  },
-  {
-    offset: 1,
-    color: '#6cb3e9'
-  }
-])
-
-const errColor = new zrender.LinearGradient(0, 0, 0, 1, [
-  {
-    offset: 1,
-    color: '#9a0851'
-  },
-  {
-    offset: 0,
-    color: '#244a7a'
-  }
-])
+import config from '../config'
 
 class ViewBackgroundShape extends zrender.Path {
     selectedAnimate = null
     constructor(options) {
       options.draggable = false
-      options.style.fill = errColor
+      options.style.fill = config.backgroundColor.linearColor
       options.style.lineWidth = 3
       options.style.strokeNoScale = true
       options.style.stroke = '#0d1e34'
@@ -40,8 +18,6 @@ class ViewBackgroundShape extends zrender.Path {
 
     // eslint-disable-next-line no-unused-vars
     buildPath(ctx, shapeCfg, inBatch) {
-      ctx.fillStyle = this.getFillColor()
-      // ctx.setLineDash([3])
       ctx.moveTo(this.x, this.y)
       ctx.lineTo(this.x + this.width, this.y)
       ctx.lineTo(this.x + this.width, this.y + this.height)
@@ -52,11 +28,11 @@ class ViewBackgroundShape extends zrender.Path {
     getFillColor() {
       switch (this.state) {
         case 'normal':
-          return linearColor
+          return config.backgroundColor.linearColor
         case 'error':
-          return errColor
+          return config.backgroundColor.errColor
         default:
-          return linearColor
+          return config.backgroundColor.linearColor
       }
     }
     setState(state) {
@@ -64,7 +40,10 @@ class ViewBackgroundShape extends zrender.Path {
     }
 
     setSelected(selected) {
+      this.state = selected ? 'error' : 'normal'
+
       const style = this.style
+      style.fill = this.getFillColor()
       style.stroke = selected ? '#224f84' : '#181616'
       style.lineDash = selected ? [10] : false
       if (selected && this.selectedAnimate === null) {
