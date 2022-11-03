@@ -25,13 +25,18 @@ export default {
   },
   mounted() {
     this.zr = Zrender.init(this.$refs.container)
+    this.zr.on('click', (e) => {
+      console.dir(e.offsetX + '-' + e.offsetY)
+    })
+
     for (let i = 0; i < this.nodes.length; i++) {
       const opt = this.nodes[i]
       const opt2 = { selectChange: this.onZrClick }
       Object.assign(opt2, opt)
-      const n1 = new NodeBox(opt2)
-      this.zr.add(n1)
-      this.boxList.push(n1)
+      opt2.z = i + 1
+      const nodeBox = new NodeBox(opt2)
+      this.zr.add(nodeBox)
+      this.boxList.push(nodeBox)
     }
   },
   methods: {

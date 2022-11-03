@@ -1,8 +1,10 @@
 const zrender = require('zrender')
 export default {
-  font: {
+  BoxFont: {
     size: 3,
-    color: '#000000'
+    color: '#173e38',
+    colorSelected: '#51dddd',
+    fontSize: 40
   },
   backgroundColor: {
     linearColor: new zrender.LinearGradient(0, 0, 0, 1, [
@@ -15,7 +17,6 @@ export default {
         color: '#6cb3e9'
       }
     ]),
-
     errColor: new zrender.LinearGradient(0, 0, 0, 1, [
       {
         offset: 1,
@@ -26,5 +27,10 @@ export default {
         color: '#244a7a'
       }
     ])
+  },
+  BoxBorder: {
+    lineWidth: 3,
+    color: '#1b391d',
+    colorSelected: '#3fba4e'
   }
 }

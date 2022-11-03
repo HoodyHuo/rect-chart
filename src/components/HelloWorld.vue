@@ -14,24 +14,25 @@ export default {
   name: 'HelloWorld',
   components: { ZrenderFlow },
   props: {
+    // eslint-disable-next-line vue/require-default-prop
     msg: String
   },
   data() {
     return {
       nodeList: [
         {
-          x: 150,
-          y: 100,
+          x: 0,
+          y: 0,
           width: 200,
-          height: 100,
+          height: 200,
           name: 'zrender1',
           target: {
             name: 'zrender1',
             age: 50
           }
         }, {
-          x: 80,
-          y: 50,
+          x: 200,
+          y: 200,
           width: 200,
           height: 100,
           name: 'zrender2',
@@ -40,8 +41,8 @@ export default {
             age: 20
           }
         }, {
-          x: 90,
-          y: 150,
+          x: 300,
+          y: 10,
           width: 200,
           height: 100,
           name: 'zrender3',
@@ -50,8 +51,8 @@ export default {
             age: 20
           }
         }, {
-          x: 30,
-          y: 100,
+          x: 450,
+          y: 150,
           width: 200,
           height: 100,
           name: 'zrender4',

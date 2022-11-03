@@ -1,14 +1,15 @@
 const zrender = require('zrender')
-import config from '../config'
+import config from '../BoxConfig'
+const BoxBorder = config.BoxBorder
 
 class ViewBackgroundShape extends zrender.Path {
     selectedAnimate = null
     constructor(options) {
       options.draggable = false
       options.style.fill = config.backgroundColor.linearColor
-      options.style.lineWidth = 3
+      options.style.lineWidth = BoxBorder.lineWidth
       options.style.strokeNoScale = true
-      options.style.stroke = '#0d1e34'
+      options.style.stroke = BoxBorder.color
 
       // eslint-disable-next-line no-debugger
       super(options)
@@ -40,11 +41,8 @@ class ViewBackgroundShape extends zrender.Path {
     }
 
     setSelected(selected) {
-      this.state = selected ? 'error' : 'normal'
-
       const style = this.style
-      style.fill = this.getFillColor()
-      style.stroke = selected ? '#224f84' : '#181616'
+      style.stroke = selected ? BoxBorder.colorSelected : BoxBorder.color
       style.lineDash = selected ? [10] : false
       if (selected && this.selectedAnimate === null) {
         this.selectedAnimate = setInterval(() => {
@@ -54,7 +52,7 @@ class ViewBackgroundShape extends zrender.Path {
             style.lineDashOffset++
           }
           this.attr('style', style)
-        }, 50)
+        }, 20)
       } else {
         clearInterval(this.selectedAnimate)
         this.selectedAnimate = null
