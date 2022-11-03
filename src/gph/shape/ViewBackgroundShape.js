@@ -52,7 +52,7 @@ class ViewBackgroundShape extends zrender.Path {
             style.lineDashOffset++
           }
           this.attr('style', style)
-        }, 20)
+        }, BoxBorder.speed)
       } else {
         clearInterval(this.selectedAnimate)
         this.selectedAnimate = null

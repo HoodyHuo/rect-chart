@@ -31,6 +31,7 @@ export default {
   BoxBorder: {
     lineWidth: 3,
     color: '#1b391d',
-    colorSelected: '#3fba4e'
+    colorSelected: '#3fba4e',
+    speed: 20
   }
 }
