@@ -26,6 +26,7 @@ export default {
           width: 200,
           height: 200,
           name: 'zrender1',
+          state: 'errColor',
           target: {
             name: 'zrender1',
             age: 50
@@ -36,6 +37,7 @@ export default {
           width: 200,
           height: 100,
           name: 'zrender2',
+
           target: {
             name: 'zrender2',
             age: 20

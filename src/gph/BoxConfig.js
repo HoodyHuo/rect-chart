@@ -7,7 +7,7 @@ export default {
     fontSize: 40
   },
   backgroundColor: {
-    linearColor: new zrender.LinearGradient(0, 0, 0, 1, [
+    default: new zrender.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
         color: '#efe3ff'
@@ -31,8 +31,8 @@ export default {
   BoxBorder: {
     lineWidth: 3,
     color: '#1b391d',
-    colorSelected: '#3fba4e',
-    speed: 20
+    colorSelected: '#12bc17',
+    speed: 30
   },
   EditBox: {
     circleSize: 5,

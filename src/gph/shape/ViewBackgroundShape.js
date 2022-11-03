@@ -6,14 +6,14 @@ class ViewBackgroundShape extends zrender.Path {
     selectedAnimate = null
     constructor(options) {
       options.draggable = false
-      options.style.fill = config.backgroundColor.linearColor
+      options.style.fill = config.backgroundColor[(options.state || 'default')]
       options.style.lineWidth = BoxBorder.lineWidth
       options.style.strokeNoScale = true
       options.style.stroke = BoxBorder.color
 
       // eslint-disable-next-line no-debugger
       super(options)
-      this.state = 'normal'
+      this.state = options.state || 'default'
       this.name = options.name
     }
 
@@ -27,17 +27,12 @@ class ViewBackgroundShape extends zrender.Path {
     }
 
     getFillColor() {
-      switch (this.state) {
-        case 'normal':
-          return config.backgroundColor.linearColor
-        case 'error':
-          return config.backgroundColor.errColor
-        default:
-          return config.backgroundColor.linearColor
-      }
+      return config.backgroundColor[this.state] || config.backgroundColor['default']
     }
-    setState(state) {
+    updateState(state) {
       this.state = state
+      this.options.style.fill = this.getFillColor()
+      this.dirty()
     }
 
     setSelected(selected) {

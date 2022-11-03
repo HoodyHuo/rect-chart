@@ -34,6 +34,7 @@ class NodeBox extends zrender.Group {
      * @param {number} options.height 高
      * @param {string} options.name 显示名称
      * @param {json} options.target 节点关联对象
+     * @param {json} options.state 节点状态
      * @param {boolean} options.draggable 是否可以拖动
      * @param {function} options.selectChange 选中回调函数
      * @param {function} options.move 被拖拽事件
@@ -55,6 +56,7 @@ class NodeBox extends zrender.Group {
         width: options.width,
         height: options.height,
         name: 'node',
+        state: options.state,
         style: {
         },
         // group options
