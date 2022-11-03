@@ -66,6 +66,7 @@ class EditShape extends zrender.Group {
 
     createHandlePoints() {
       const leftTopPointConfig = {
+        cursor: 'nw-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.leftTop)
@@ -76,6 +77,7 @@ class EditShape extends zrender.Group {
       this.add(this.leftTopPoint)
 
       const centerTopPointConfig = {
+        cursor: 'n-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.centerTop)
@@ -86,6 +88,7 @@ class EditShape extends zrender.Group {
       this.add(this.centerTopPoint)
 
       const rightTopPointConfig = {
+        cursor: 'ne-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.rightTop)
@@ -96,6 +99,7 @@ class EditShape extends zrender.Group {
       this.add(this.rightTopPoint)
 
       const rightCenterPointConfig = {
+        cursor: 'e-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.rightCenter)
@@ -106,6 +110,7 @@ class EditShape extends zrender.Group {
       this.add(this.rightCenterPoint)
 
       const rightBottomPointConfig = {
+        cursor: 'se-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.rightBottom)
@@ -116,6 +121,7 @@ class EditShape extends zrender.Group {
       this.add(this.rightBottomPoint)
 
       const centerBottomConfig = {
+        cursor: 's-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.centerBottom)
@@ -126,6 +132,7 @@ class EditShape extends zrender.Group {
       this.add(this.centerBottomPoint)
 
       const leftBottomConfig = {
+        cursor: 'sw-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.leftBottom)
@@ -136,6 +143,7 @@ class EditShape extends zrender.Group {
       this.add(this.leftBottomPoint)
 
       const leftCenterConfig = {
+        cursor: 'w-resize',
         ondragstart: this._memTargetState.bind(this),
         ondrag: (evnet) => {
           this._handlePointDrag(evnet, positionKey.leftCenter)
