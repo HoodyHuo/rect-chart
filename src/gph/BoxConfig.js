@@ -33,5 +33,9 @@ export default {
     color: '#1b391d',
     colorSelected: '#3fba4e',
     speed: 20
+  },
+  EditBox: {
+    circleSize: 5,
+    circleColor: '#FF6EBE'
   }
 }

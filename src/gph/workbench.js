@@ -1,5 +1,6 @@
 const Zrender = require('zrender')
 import NodeBox from './NodeBox'
+import EditShape from './shape/EditShape'
 
 class Workbench {
   el // the DOM element
@@ -8,6 +9,7 @@ class Workbench {
 
   selectedBox = null // the selected node
   boxList = [] // array of DrawNode
+  resizeBox = null
 
   clickNodeCallback // callback
 
@@ -24,7 +26,7 @@ class Workbench {
     this.clickNodeCallback = options.clickNode
 
     this._bindingEvent()
-
+    this._initResizeBox()
     this._createNodes()
   }
 
@@ -37,7 +39,10 @@ class Workbench {
   _createNodes() {
     for (let i = 0; i < this.nodes.length; i++) {
       const nodeData = this.nodes[i]
-      const opt2 = { selectChange: this._onNodeClick.bind(this) }
+      const opt2 = {
+        selectChange: this._onNodeClick.bind(this),
+        move: this._onNodeMove.bind(this)
+      }
       Object.assign(opt2, nodeData)
       opt2.z = i + 1
       const nodeBox = new NodeBox(opt2)
@@ -54,6 +59,7 @@ class Workbench {
       if (box) {
         this.selectedBox = box
         this.selectedBox.selected(true)
+        this.resizeBox.show(box)
       }
     }
     /**
@@ -62,6 +68,23 @@ class Workbench {
      * @param target 盒子绑定的数据对象
      */
     this.clickNodeCallback(event, box ? box.target : null)
+  }
+
+  _initResizeBox() {
+    const resizeBox = new EditShape({
+      onSizeChange: this._onSizeChange.bind(this)
+    })
+    this.zr.add(resizeBox)
+    this.resizeBox = resizeBox
+  }
+
+  _onSizeChange(box, param) {
+
+  }
+  _onNodeMove(event, box) {
+    if (this.selectedBox === box) {
+      this.resizeBox._moveToBox(box)
+    }
   }
 }
 

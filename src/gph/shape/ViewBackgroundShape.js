@@ -59,6 +59,13 @@ class ViewBackgroundShape extends zrender.Path {
       }
       this.attr('style', style)
     }
+    resize(x, y, width, height) {
+      this.x = x
+      this.y = y
+      this.width = width
+      this.height = height
+      this.dirty()
+    }
 }
 
 export default ViewBackgroundShape

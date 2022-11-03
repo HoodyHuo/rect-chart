@@ -36,6 +36,7 @@ class NodeBox extends zrender.Group {
      * @param {json} options.target 节点关联对象
      * @param {boolean} options.draggable 是否可以拖动
      * @param {function} options.selectChange 选中回调函数
+     * @param {function} options.move 被拖拽事件
      * @constructor
      */
     constructor(options) {
@@ -78,6 +79,9 @@ class NodeBox extends zrender.Group {
       this.onclick = (event) => {
         options.selectChange.call(this, event, this)
       }
+      this.ondrag = (event) => {
+        options.move.call(this, event, this)
+      }
     }
 
     selected(isSelected) {
@@ -89,6 +93,15 @@ class NodeBox extends zrender.Group {
         style: {
           fill: (isSelected ? BoxFont.colorSelected : BoxFont.color)
         }})
+    }
+    resize(x, y, width, height) {
+      this.attr('x', x)
+      this.attr('y', y)
+      this.width = width
+      this.height = height
+      this.view.resize(0, 0, width, height)
+      this.fontView.style.width = width
+      this.fontView.attr('style', this.fontView.style)
     }
 }
 
