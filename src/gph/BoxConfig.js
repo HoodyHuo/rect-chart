@@ -37,5 +37,13 @@ export default {
   EditBox: {
     circleSize: 5,
     circleColor: '#FF6EBE'
+  },
+  Line: {
+    lineWidth: 5,
+    color: '#6f5c13',
+    handle: {
+      size: 3,
+      color: '#17329a'
+    }
   }
 }

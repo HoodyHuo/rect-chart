@@ -13,6 +13,10 @@ export default {
     nodes: {
       type: Array,
       required: true
+    },
+    lines: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -24,6 +28,7 @@ export default {
     this.workbench = new Workbench({
       el: this.$refs.container,
       nodes: this.nodes,
+      lines: this.lines,
       clickNode: this.onZrClick
     })
   },

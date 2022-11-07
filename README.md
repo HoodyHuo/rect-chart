@@ -1,24 +1,12 @@
-# zrender-svg
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# TODO LIST
+- 框选整体操作
+  - 移动
+  - 移除
+- 连线 
+  - 线段绘制
+  - 箭头绘制
+  - 边缘贴合
+  - 线段计算
+- 运行时状态更新
+  - vue-watch
+  - workbench 执行

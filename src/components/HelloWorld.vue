@@ -3,6 +3,7 @@
     <zrender-flow
       class="content"
       :nodes="nodeList"
+      :lines="lineList"
       @select="ccc"
     />
   </div>
@@ -63,6 +64,27 @@ export default {
             age: 20
           }
         }
+      ],
+      lineList: [
+        {
+          from: 'zrender1',
+          to: 'zrender2',
+          path: [
+            { x: 100, y: 100 },
+            { x: 220, y: 120 },
+            { x: 450, y: 100 }
+          ]
+        }
+        // {
+        //   from: 'zrender2',
+        //   to: 'zrender3',
+        //   path: []
+        // },
+        // {
+        //   from: 'zrender3',
+        //   to: 'zrender4',
+        //   path: []
+        // }
       ]
     }
   },
@@ -83,6 +105,6 @@ export default {
 }
 .content {
   height: 600px;
-  width: 800px;
+  width: 1000px;
 }
 </style>
