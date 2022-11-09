@@ -4,6 +4,8 @@ const zrender = require('zrender')
 // eslint-disable-next-line no-unused-vars
 import Config from '../BoxConfig'
 import { alignBorder } from '@/gph/shape/tool'
+import ViewBackgroundShape from '@/gph/shape/ViewBackgroundShape'
+import { TSpan } from 'zrender'
 
 const ConnectBox = Config.ConnectBox
 
@@ -150,12 +152,21 @@ class ConnectShape extends zrender.Group {
       let endBox = null
       let endDirection = null
       let position = { x: event.offsetX, y: event.offsetY }
-      if (event.topTarget &&
-          (event.topTarget.Type === 'ViewBackgroundShape')) {
-        endBox = event.topTarget.parent
-        const endAl = alignBorder({ x: event.offsetX, y: event.offsetY }, endBox)
-        endDirection = endAl.direction
-        position = endAl.pos
+      if (event.topTarget) {
+        if (event.topTarget instanceof ViewBackgroundShape) {
+          endBox = event.topTarget.parent
+        }
+        if (event.topTarget instanceof TSpan) {
+          endBox = event.topTarget.parent.parent
+        }
+        if (event.topTarget instanceof zrender.Circle && event.topTarget.parent && event.topTarget.parent instanceof ConnectShape) {
+          endBox = event.topTarget.parent.parent
+        }
+        if (endBox !== null) {
+          const endAl = alignBorder({ x: event.offsetX, y: event.offsetY }, endBox)
+          endDirection = endAl.direction
+          position = endAl.pos
+        }
       }
       this.onMoveLine(
         startBox, direction,

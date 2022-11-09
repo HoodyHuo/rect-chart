@@ -60,6 +60,7 @@ class NodeBox extends zrender.Group {
       this.name = options.name
       // 创建展示shape
       this.view = new ViewBackgroundShape({
+        box: this,
         z: options.z,
         z2: 10,
         width: options.width,
@@ -74,6 +75,7 @@ class NodeBox extends zrender.Group {
         draggable: true
       })
       this.fontView = new zrender.Text({
+        box: this,
         z: options.z,
         z2: 20,
         silent: true,
