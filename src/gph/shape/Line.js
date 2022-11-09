@@ -1,3 +1,5 @@
+import { alignBorder } from '@/gph/shape/tool'
+
 const zrender = require('zrender')
 import LinePath from './LinePath'
 import BoxConfig from '../BoxConfig'
@@ -17,6 +19,8 @@ const circleOptions = {
 }
 
 class Line extends zrender.Group {
+    Type = 'Line'
+
     // data
     path
     from
@@ -102,18 +106,43 @@ class Line extends zrender.Group {
     }
 
     /**
+     * 更新路劲
+     * @param {Array[][]} path
+     * @param {NodeBox} startBox 起点节点
+     * @param {NodeBox} endBox  结束节点
+     */
+    updatePath(path, startBox, endBox) {
+      this.path = path
+      this.from = startBox ? startBox.name : null
+      this.to = endBox ? endBox.name : null
+
+      this.startPoint.x = path[0][0]
+      this.startPoint.y = path[0][1]
+      this.startPoint.dirty()
+
+      this.endPoint.x = path[path.length - 1][0]
+      this.endPoint.y = path[path.length - 1][1]
+      this.endPoint.dirty()
+
+      for (let i = 0; i < path.length; i++) {
+        path[i] = { x: path[i][0], y: path[i][1] }
+      }
+      this.lineView.updatePath(path)
+    }
+
+    /**
      * 线段推动
-     * @param event
-     * @param number 节点序号
+     * @param event e
+     * @param {number} index 节点序号
      * @private
      */
-    _connectMove(event, number) {
-      if ((number === 0 || number === this.path.length - 1) && this.workbench.getDragEnter() !== null) {
-        this.alginBorder(number,
+    _connectMove(event, index) {
+      if ((index === 0 || index === this.path.length - 1) && this.workbench.getDragEnter() !== null) {
+        this.alginBorder(index,
           { x: event.offsetX, y: event.offsetY },
           this.workbench.getDragEnter())
       } else {
-        this._movePath(event, number)
+        this._movePath(event, index)
       }
     }
 
@@ -125,54 +154,27 @@ class Line extends zrender.Group {
       this.lineView.dirty()
     }
 
-    alginBorder(index, position, dragEnter) {
-      if (dragEnter === null) {
+    alginBorder(index, position, box) {
+      if (box === null) {
         return
       }
-      if (position.x >= dragEnter.x &&
-       position.y >= dragEnter.y &&
-       position.x <= dragEnter.x + dragEnter.width &&
-       position.y <= dragEnter.y + dragEnter.height) {
-        const sort = []
-        sort.push({ p: 'top', v: Math.abs(position.y - dragEnter.y) })
-        sort.push({ p: 'bottom', v: Math.abs(position.y - (dragEnter.y + dragEnter.height)) })
-        sort.push({ p: 'left', v: Math.abs(position.x - dragEnter.x) })
-        sort.push({ p: 'right', v: Math.abs(position.x - (dragEnter.x + dragEnter.width)) })
-        sort.sort((a, b) => {
-          return a.v - b.v
-        })
-        const bindPoint = { x: position.x, y: position.y }
-        const st1 = sort[0]
-        switch (st1.p) {
-          case 'top':
-            bindPoint.y = dragEnter.y
-            break
-          case 'bottom':
-            bindPoint.y = dragEnter.y + dragEnter.height
-            break
-          case 'left':
-            bindPoint.x = dragEnter.x
-            break
-          case 'right':
-            bindPoint.x = dragEnter.x + dragEnter.width
-            break
-        }
-        if (index === 0) {
-          this.startPoint.x = bindPoint.x
-          this.startPoint.y = bindPoint.y
-          this.startPoint.dirty()
-        }
-
-        if (index === this.path.length - 1) {
-          this.endPoint.x = bindPoint.x
-          this.endPoint.y = bindPoint.y
-          this.endPoint.dirty()
-        }
-
-        this.path[index].y = bindPoint.y
-        this.path[index].x = bindPoint.x
-        this.lineView.dirty()
+      const { pos } = alignBorder(position, box)
+      if (index === 0) {
+        this.from = box.name
+        this.startPoint.x = pos.x
+        this.startPoint.y = pos.y
+        this.startPoint.dirty()
       }
+
+      if (index === this.path.length - 1) {
+        this.to = box.name
+        this.endPoint.x = pos.x
+        this.endPoint.y = pos.y
+        this.endPoint.dirty()
+      }
+      this.path[index].y = pos.y
+      this.path[index].x = pos.x
+      this.lineView.dirty()
     }
 }
 

@@ -4,6 +4,8 @@ const BoxBorder = config.BoxBorder
 
 class ViewBackgroundShape extends zrender.Path {
     selectedAnimate = null
+    Type = 'ViewBackgroundShape'
+
     constructor(options) {
       options.draggable = false
       options.style.fill = config.backgroundColor[(options.state || 'default')]

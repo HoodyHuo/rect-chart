@@ -85,7 +85,7 @@ class EditShape extends zrender.Group {
       }
       Object.assign(centerTopPointConfig, circleOptions)
       this.centerTopPoint = new zrender.Circle(centerTopPointConfig)
-      this.add(this.centerTopPoint)
+      // this.add(this.centerTopPoint)
 
       const rightTopPointConfig = {
         cursor: 'ne-resize',
@@ -107,7 +107,7 @@ class EditShape extends zrender.Group {
       }
       Object.assign(rightCenterPointConfig, circleOptions)
       this.rightCenterPoint = new zrender.Circle(rightCenterPointConfig)
-      this.add(this.rightCenterPoint)
+      // this.add(this.rightCenterPoint)
 
       const rightBottomPointConfig = {
         cursor: 'se-resize',
@@ -129,7 +129,7 @@ class EditShape extends zrender.Group {
       }
       Object.assign(centerBottomConfig, circleOptions)
       this.centerBottomPoint = new zrender.Circle(centerBottomConfig)
-      this.add(this.centerBottomPoint)
+      // this.add(this.centerBottomPoint)
 
       const leftBottomConfig = {
         cursor: 'sw-resize',
@@ -151,7 +151,7 @@ class EditShape extends zrender.Group {
       }
       Object.assign(leftCenterConfig, circleOptions)
       this.leftCenterPoint = new zrender.Circle(leftCenterConfig)
-      this.add(this.leftCenterPoint)
+      // this.add(this.leftCenterPoint)
     }
 
     _handlePointDrag(event, target) {

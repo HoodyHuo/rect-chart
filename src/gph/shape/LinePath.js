@@ -24,6 +24,15 @@ class LinePath extends zrender.Path {
       ctx.lineTo(path[i].x, path[i].y)
     }
   }
+
+  /**
+   *
+   * @param {number[]} path
+   */
+  updatePath(path) {
+    this.attr('data', path)
+    this.dirty()
+  }
 }
 
 export default LinePath

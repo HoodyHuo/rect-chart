@@ -38,6 +38,10 @@ export default {
     circleSize: 5,
     circleColor: '#FF6EBE'
   },
+  ConnectBox: {
+    circleSize: 5,
+    circleColor: '#1e3dd8'
+  },
   Line: {
     lineWidth: 5,
     color: '#6f5c13',

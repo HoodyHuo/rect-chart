@@ -1,5 +1,6 @@
 import ViewBackgroundShape from './shape/ViewBackgroundShape'
 import config from './BoxConfig'
+import ConnectShape from '@/gph/shape/ConnectShape'
 const zrender = require('zrender')
 const BoxFont = config.BoxFont
 
@@ -24,6 +25,7 @@ class NodeBox extends zrender.Group {
     fontView // 文字shape
     target // 附带信息
     name // 展示文字
+    connectShape
 
     isSelected = false
     /**
@@ -40,6 +42,10 @@ class NodeBox extends zrender.Group {
      * @param {function} options.move 被拖拽事件
      * @param {function} options.onDragEnter 有东西托进入
      * @param {function} options.onDragLeave 有东西脱出
+     *
+     * @param {function} options.onCreateLine
+     * @param {function} options.onMoveLine
+     * @param {function} options.onEndLine
      * @constructor
      */
     constructor(options) {
@@ -83,6 +89,23 @@ class NodeBox extends zrender.Group {
       // shape 加入当前组合
       this.add(this.view)
       this.add(this.fontView)
+
+      // 创建链接盒子
+      this.connectShape = new ConnectShape({
+        x: 0,
+        y: 0,
+        z: options.z,
+        z2: 30,
+        width: options.width,
+        height: options.height,
+        draggable: false,
+        box: this,
+        onCreateLine: options.onCreateLine,
+        onMoveLine: options.onMoveLine,
+        onEndLine: options.onEndLine
+      })
+      this.add(this.connectShape)
+
       // 绑定事件
       this.onclick = (event) => {
         options.selectChange.call(this, event, this)
@@ -110,6 +133,8 @@ class NodeBox extends zrender.Group {
       this.view.resize(0, 0, width, height)
       this.fontView.style.width = width
       this.fontView.attr('style', this.fontView.style)
+
+      this.connectShape.resize(width, height)
     }
 }
 
