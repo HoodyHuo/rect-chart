@@ -1,12 +1,15 @@
 const zrender = require('zrender')
 export default {
+  // 节点字体配置
   BoxFont: {
     size: 3,
     color: '#173e38',
     colorSelected: '#51dddd',
     fontSize: 40
   },
+  // 节点背景色配置
   backgroundColor: {
+    // errColor 等节点 可添加，节点根据state字段进行颜色匹配
     default: new zrender.LinearGradient(0, 0, 0, 1, [
       {
         offset: 0,
@@ -28,26 +31,30 @@ export default {
       }
     ])
   },
+  // 节点边框配置
   BoxBorder: {
     lineWidth: 3,
-    color: '#1b391d',
-    colorSelected: '#12bc17',
-    speed: 30
+    color: '#1b391d', // 默认边框颜色
+    colorSelected: '#12bc17', // 选中边框颜色
+    speed: 30 // 滚动包围速度 越小越块，必须大于10
   },
+  // 尺寸调整盒子
   EditBox: {
-    circleSize: 5,
-    circleColor: '#FF6EBE'
+    circleSize: 5, // 拖拽点大小
+    circleColor: '#FF6EBE' // 颜色
   },
+  // 连线盒子
   ConnectBox: {
     circleSize: 5,
     circleColor: '#1e3dd8'
   },
+  // 线材
   Line: {
-    lineWidth: 5,
-    color: '#6f5c13',
+    lineWidth: 5, // 线条粗细
+    color: '#6f5c13', // 颜色
     handle: {
-      size: 3,
-      color: '#17329a'
+      size: 3, // 移动线条 圆点大小
+      color: '#17329a' // 颜色
     }
   }
 }

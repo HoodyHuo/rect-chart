@@ -18,6 +18,9 @@ const circleOptions = {
   draggable: true
 }
 
+/**
+ * 连线
+ */
 class Line extends zrender.Group {
     Type = 'Line'
 

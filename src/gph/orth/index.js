@@ -7,7 +7,13 @@ import Grid from './Grid'
 import find from './find'
 
 /**
+ * 从 项目 翻译而来 https://juejin.cn/post/6971413180836741151#heading-6
+ * https://github.com/raohong/flowchart-orth
  *
+ */
+
+/**
+ * 获取盒子连线的起点
  * @param box
  * @param {number} box.x
  * @param {number} box.y
@@ -31,7 +37,7 @@ function getOrigin(box) {
 }
 
 /**
- * 计算朝向
+ * 计算2个位置的朝向
  * @param from
  * @param {number} from.x from x
  * @param {number} from.y from y
@@ -51,7 +57,7 @@ export const getDirection = (from, to) => {
   return v.x > 0 ? Direction.RIGHT : Direction.LEFT
 }
 /**
- *
+ * 根据2个盒子，计算连接线
  * @param  startParam
  * @param {number}  startParam.x
  * @param {number}  startParam.y
@@ -148,7 +154,6 @@ export const createPath = (startParam, endParam, minDist) => {
       return checkedBoxs.every((item) => !lineRect(from, to, item))
     }
   })
-  console.log('make Path')
   // return {
   //   path: result,
   //   points: result.grid.points

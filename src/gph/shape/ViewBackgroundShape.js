@@ -2,6 +2,9 @@ const zrender = require('zrender')
 import config from '../BoxConfig'
 const BoxBorder = config.BoxBorder
 
+/**
+ * 节点 背景图层
+ */
 class ViewBackgroundShape extends zrender.Path {
     selectedAnimate = null
     Type = 'ViewBackgroundShape'

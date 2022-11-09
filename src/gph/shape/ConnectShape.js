@@ -4,7 +4,10 @@ const zrender = require('zrender')
 // eslint-disable-next-line no-unused-vars
 import Config from '../BoxConfig'
 import { alignBorder } from '@/gph/shape/tool'
+
 const ConnectBox = Config.ConnectBox
+
+/** 连线起点通用zrender配置 */
 const circleOptions = {
   cursor: 'crosshair',
   zlevel: 10,
@@ -18,6 +21,9 @@ const circleOptions = {
   draggable: true
 }
 
+/**
+ * 拖拽连线 图形层
+ */
 class ConnectShape extends zrender.Group {
     // 拖拽点
     pointers= {} // Map<Direction, zrender.Circle>

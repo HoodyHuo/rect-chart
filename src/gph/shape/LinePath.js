@@ -1,6 +1,10 @@
 const zrender = require('zrender')
 import BoxConfig from '../BoxConfig'
 const LineConfig = BoxConfig.Line
+
+/**
+ * 连线绘制图层
+ */
 class LinePath extends zrender.Path {
   data
 

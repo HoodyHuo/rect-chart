@@ -26,6 +26,9 @@ const positionKey = {
   leftCenter: 'left-center'
 }
 
+/**
+ * 尺寸调整图形层
+ */
 class EditShape extends zrender.Group {
     // 拖拽点
     leftTopPoint // 左上
