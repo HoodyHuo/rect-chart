@@ -4,7 +4,7 @@ const Zrender = require('zrender')
 import NodeBox from './NodeBox'
 import EditShape from './shape/EditShape'
 import Line from './shape/Line'
-import { createPath } from './orth'
+import { calculateScalePosition, createPath } from './orth'
 import { culaPosition, subDirection } from '@/gph/shape/tool'
 
 class Workbench {
@@ -14,6 +14,7 @@ class Workbench {
   lines // array of relative path
 
   selectedBox = null // the selected node
+  selectedLine = null // the selected line
   boxList = [] // array of DrawNode
   lineList = [] // array of RelativePath
   resizeBox = null
@@ -22,6 +23,8 @@ class Workbench {
   clickNodeCallback // callback
 
   tempLine = null // 当前正在拖动的连接线
+
+  eventMap = {}
 
   /**
      * @constructor
@@ -134,9 +137,15 @@ class Workbench {
       height: 4,
       direction: Direction.getReverse(direction)
     }, 20)
+    const scaleStart = calculateScalePosition(startBox, path[0])
     const line = new Line({
       path: path,
-      from: startBox.name,
+      from: {
+        name: startBox.name,
+        scaleX: scaleStart.x,
+        scaleY: scaleStart.y,
+        direction: direction
+      },
       to: null,
       workbench: this
     })
@@ -167,14 +176,14 @@ class Workbench {
         height: startBox.height,
         direction: startDirection
       }, {
-        x: position.x - 2,
-        y: position.y - 2,
-        width: 4,
-        height: 4,
+        x: position.x,
+        y: position.y,
+        width: 0,
+        height: 0,
         direction: endDirection || subDirection(position, culaPosition(startBox, startDirection))
       }, 20
     )
-    this.tempLine.updatePath(path, startBox, endBox)
+    this.tempLine.updatePath(path, startBox, startDirection, endBox, endDirection)
   }
 
   /**
@@ -189,7 +198,7 @@ class Workbench {
    *
    * @private
    */
-  _onEndLine(event) {
+  _onEndLine(startBox, startDirection, position, endBox, endDirection) {
     if (this.tempLine.to == null) {
       this.zr.remove(this.tempLine)
     } else {
@@ -227,11 +236,23 @@ class Workbench {
   }
 
   _onSizeChange(box, param) {
-
+    this._redrawLineWhenBoxChange(box)
   }
   _onNodeMove(event, box) {
+    // 如果有缩放框，则同步移动缩放框
     if (this.selectedBox === box) {
       this.resizeBox._moveToBox(box)
+    }
+    // 如果有连接线，同步移动连接线
+    this._redrawLineWhenBoxChange(box)
+  }
+
+  _redrawLineWhenBoxChange(box) {
+    for (let i = 0; i < this.lineList.length; i++) {
+      const line = this.lineList[i]
+      if (box.name === line.from.name || box.name === line.to.name) {
+        line.updateBoxMove(box)
+      }
     }
   }
 

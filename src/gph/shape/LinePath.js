@@ -1,3 +1,5 @@
+import config from '@/gph/BoxConfig'
+
 const zrender = require('zrender')
 import BoxConfig from '../BoxConfig'
 const LineConfig = BoxConfig.Line
@@ -16,8 +18,18 @@ class LinePath extends zrender.Path {
     options.style.lineWidth = LineConfig.lineWidth
     options.style.strokeNoScale = true
     options.style.stroke = LineConfig.color
+    options.style.lineDash = 8
     super(options)
     this.data = options.data
+
+    setInterval(() => {
+      if (this.style.lineDashOffset === 1) {
+        this.style.lineDashOffset = 16
+      } else {
+        this.style.lineDashOffset--
+      }
+      this.dirty()
+    }, 20)
   }
 
   buildPath(ctx, shapeCfg, inBatch) {

@@ -161,3 +161,39 @@ export const createPath = (startParam, endParam, minDist) => {
   return result.path
 }
 
+/**
+ * 计算position 在盒子里面的 比列位置
+ * @param  box
+ * @param {number}  box.x
+ * @param {number}  box.y
+ * @param {number}  box.width
+ * @param {number}  box.height
+ * @param position
+ * @param {number}  position.x
+ * @param {number}  position.y
+ *
+ * @return {{x: number, y: number}} scalePosition
+ */
+export const calculateScalePosition = (box, position) => {
+  const offsetX = position.x - box.x
+  const offsetY = position.y - box.y
+
+  return { x: offsetX / box.width, y: offsetY / box.y }
+}
+/**
+ * 计算position 在盒子里面的 比列位置
+ * @param  box
+ * @param {number}  box.x
+ * @param {number}  box.y
+ * @param {number}  box.width
+ * @param {number}  box.height
+ * @param scalePosition
+ * @param {number}  scalePosition.scaleX
+ * @param {number}  scalePosition.scaleY
+ *
+ * @return {{x: number, y: number}} position
+ */
+export const calculatePosition = (box, scalePosition) => {
+  return { x: box.x + box.width * scalePosition.scaleX,
+    y: box.y + box.height * scalePosition.scaleY }
+}

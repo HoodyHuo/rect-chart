@@ -51,9 +51,9 @@ export default {
   // 线材
   Line: {
     lineWidth: 5, // 线条粗细
-    color: '#6f5c13', // 颜色
+    color: '#62d53a', // 颜色
     handle: {
-      size: 3, // 移动线条 圆点大小
+      size: 5, // 移动线条 圆点大小
       color: '#17329a' // 颜色
     }
   }

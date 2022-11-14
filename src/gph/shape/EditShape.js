@@ -197,6 +197,7 @@ class EditShape extends zrender.Group {
           break
       }
       this._moveToBox(this.target)
+      this.onSizeChange(this.target)
     }
     /**
      * Handle resizeBox show

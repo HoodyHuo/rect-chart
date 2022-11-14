@@ -162,7 +162,7 @@ class ConnectShape extends zrender.Group {
         if (event.topTarget instanceof zrender.Circle && event.topTarget.parent && event.topTarget.parent instanceof ConnectShape) {
           endBox = event.topTarget.parent.parent
         }
-        if (endBox !== null) {
+        if (endBox !== null && endBox !== startBox) {
           const endAl = alignBorder({ x: event.offsetX, y: event.offsetY }, endBox)
           endDirection = endAl.direction
           position = endAl.pos
@@ -171,7 +171,7 @@ class ConnectShape extends zrender.Group {
       this.onMoveLine(
         startBox, direction,
         position,
-        endBox, endDirection
+        endBox !== startBox ? endBox : null, endDirection
       )
     }
 
