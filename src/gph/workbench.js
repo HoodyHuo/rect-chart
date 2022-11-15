@@ -137,7 +137,10 @@ class Workbench {
       height: 4,
       direction: Direction.getReverse(direction)
     }, 20)
-    const scaleStart = calculateScalePosition(startBox, path[0])
+    let scaleStart = { x: position.x, y: position.y }
+    if (path) {
+      scaleStart = calculateScalePosition(startBox, { x: path[0][0], y: path[0][1] })
+    }
     const line = new Line({
       path: path,
       from: {
@@ -168,6 +171,7 @@ class Workbench {
   _onMoveLine(startBox, startDirection,
     position,
     endBox, endDirection) {
+    if (this.tempLine == null) return
     const path = createPath(
       {
         x: startBox.x,
@@ -251,9 +255,18 @@ class Workbench {
     for (let i = 0; i < this.lineList.length; i++) {
       const line = this.lineList[i]
       if (box.name === line.from.name || box.name === line.to.name) {
-        line.updateBoxMove(box)
+        line.updateBoxMove(this._getBoxByName(line.from.name), this._getBoxByName(line.to.name))
       }
     }
+  }
+
+  _getBoxByName(name) {
+    for (let i = 0; i < this.boxList.length; i++) {
+      if (this.boxList[i].name === name) {
+        return this.boxList[i]
+      }
+    }
+    return null
   }
 
   _createLines() {

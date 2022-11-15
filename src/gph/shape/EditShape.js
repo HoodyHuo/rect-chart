@@ -158,7 +158,7 @@ class EditShape extends zrender.Group {
     }
 
     _handlePointDrag(event, target) {
-      console.log(event.offsetX, event.offsetY)
+      // console.log(event.offsetX, event.offsetY)
       event.stop()
       const eX = event.offsetX
       const eY = event.offsetY

@@ -142,6 +142,7 @@ class Line extends zrender.Group {
      * @param {Direction} endDirection 起始方向
      */
     updatePath(path, startBox, startDirection, endBox, endDirection) {
+      if (!path) return
       this.path = path
       if (startBox) {
         const { x, y } = calculateScalePosition(startBox, { x: path[0][0], y: path[0][1] })
@@ -206,47 +207,30 @@ class Line extends zrender.Group {
 
     /**
      * 当box节点移动，重绘路线路
-     * @param {NodeBox} box
+     * @param {NodeBox} startBox
+     * @param {NodeBox} endBox
      */
-    updateBoxMove(box) {
-      const isStart = this.from.name === box.name
-      if (isStart) {
-        const pos = calculatePosition(box, this.from)
-        const path = createPath(
-          {
-            x: pos.x,
-            y: pos.y,
-            width: 0,
-            height: 0,
-            direction: this.from.direction
-          }, {
-            x: this.path[this.path.length - 1].x,
-            y: this.path[this.path.length - 1].y,
-            width: 0,
-            height: 0,
-            direction: this.to.direction
-          }, 20
-        )
-        this.updatePath(path, null, null, null)
-      } else {
-        const pos = calculatePosition(box, this.to)
-        const path = createPath(
-          {
-            x: this.path[0].x,
-            y: this.path[0].y,
-            width: 0,
-            height: 0,
-            direction: this.from.direction
-          }, {
-            x: pos.x,
-            y: pos.y,
-            width: 0,
-            height: 0,
-            direction: this.to.direction
-          }, 20
-        )
-        this.updatePath(path, null, null, null, null)
-      }
+    updateBoxMove(startBox, endBox) {
+      const startPos = calculatePosition(startBox, this.from)
+      const endPos = calculatePosition(endBox, this.to)
+      const path = createPath(
+        {
+          x: startBox.x,
+          y: startBox.y,
+          width: startBox.width,
+          height: startBox.height,
+          direction: this.from.direction,
+          anchor: startPos
+        }, {
+          x: endBox.x,
+          y: endBox.y,
+          width: endBox.width,
+          height: endBox.height,
+          direction: this.to.direction,
+          anchor: endPos
+        }, 20
+      )
+      this.updatePath(path, startBox, this.from.direction, endBox, this.to.direction)
     }
 
     alginBorder(index, position, box) {

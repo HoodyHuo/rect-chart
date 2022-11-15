@@ -56,6 +56,57 @@ export const getDirection = (from, to) => {
 
   return v.x > 0 ? Direction.RIGHT : Direction.LEFT
 }
+
+/**
+ *
+ * @param {array[number][number]}path
+ * @return {undefined}
+ * @private
+ */
+function _filteUselessPoints(path) {
+  if (path.length < 4) return
+  if (path[0][0] === path[2][0] || path[0][1] === path[2][1]) {
+    path.splice(1, 1)
+  }
+  if (path[path.length - 3][0] === path[path.length - 1][0] ||
+      path[path.length - 3][1] === path[path.length - 1][1]) {
+    path.splice(path.length - 2, 1)
+  }
+  return path
+}
+
+/**
+ *
+ * @param path
+ * @param startAnchor
+ * @param endAnchor
+ * @return {array[number][number]}
+ * @private
+ */
+function _moveAnchor(path, startAnchor, endAnchor) {
+  if (startAnchor) {
+    const dsx = startAnchor.x - path[0][0]
+    const dsy = startAnchor.y - path[0][1]
+    path[0][0] = startAnchor.x
+    path[0][1] = startAnchor.y
+
+    path[1][0] += dsx
+    path[1][1] += dsy
+  }
+
+  if (endAnchor) {
+    const dex = endAnchor.x - path[path.length - 1][0]
+    const dey = endAnchor.y - path[path.length - 1][1]
+    path[path.length - 1][0] = endAnchor.x
+    path[path.length - 1][1] = endAnchor.y
+
+    path[path.length - 2][0] += dex
+    path[path.length - 2][1] += dey
+  }
+
+  return path
+}
+
 /**
  * 根据2个盒子，计算连接线
  * @param  startParam
@@ -64,12 +115,14 @@ export const getDirection = (from, to) => {
  * @param {number}  startParam.width
  * @param {number}  startParam.height
  * @param {number}  startParam.direction
+ * @param {{x:number,y:number}}  startParam.anchor
  * @param endParam
  * @param {number} endParam.x
  * @param {number} endParam.y
  * @param {number} endParam.width
  * @param {number} endParam.height
  * @param {number} endParam.direction
+ * @param {{x:number,y:number}}  endParam.anchor
  * @param {number} minDist
  */
 export const createPath = (startParam, endParam, minDist) => {
@@ -91,7 +144,7 @@ export const createPath = (startParam, endParam, minDist) => {
 
   const start = { box: startBox, origin: startOrigin, direction: startParam.direction }
   const end = { box: endBox, origin: endOrigin, direction: endParam.direction }
-  // debugger
+
   const { isCovered, isIntersect, startInfo, endInfo, allPoints, waypoint } =
       getPathFindingData(start, end, minDist)
 
@@ -158,7 +211,9 @@ export const createPath = (startParam, endParam, minDist) => {
   //   path: result,
   //   points: result.grid.points
   // }
-  return result.path
+  let path = _filteUselessPoints(result.path)
+  path = _moveAnchor(path, startParam.anchor, endParam.anchor)
+  return path
 }
 
 /**
@@ -178,7 +233,7 @@ export const calculateScalePosition = (box, position) => {
   const offsetX = position.x - box.x
   const offsetY = position.y - box.y
 
-  return { x: offsetX / box.width, y: offsetY / box.y }
+  return { x: offsetX / box.width, y: offsetY / box.height }
 }
 /**
  * 计算position 在盒子里面的 比列位置

@@ -1,5 +1,3 @@
-import config from '@/gph/BoxConfig'
-
 const zrender = require('zrender')
 import BoxConfig from '../BoxConfig'
 const LineConfig = BoxConfig.Line
