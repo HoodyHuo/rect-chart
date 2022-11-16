@@ -3,7 +3,7 @@ import { alignBorder } from '@/gph/shape/tool'
 const zrender = require('zrender')
 import LinePath from './LinePath'
 import BoxConfig from '../BoxConfig'
-import { calculatePosition, calculateScalePosition, createPath } from '@/gph/orth'
+import { calculatePosition, calculateScalePosition, createPath, getDirection } from '@/gph/orth'
 const LineConfig = BoxConfig.Line.handle
 
 // eslint-disable-next-line no-unused-vars
@@ -30,6 +30,8 @@ class Line extends zrender.Group {
     from
     to
 
+    isSelected
+
     // view
     lineView = null
     // handlers
@@ -46,6 +48,7 @@ class Line extends zrender.Group {
      */
     constructor(options) {
       super({
+        z: 30,
         x: 0,
         y: 0,
         height: 0,
@@ -55,6 +58,7 @@ class Line extends zrender.Group {
       this.to = options.to
       this.path = options.path
       this.workbench = options.workbench
+      this.isSelected = true
       this._createLine()
       this._createStartEndPoint()
       this._createLineHandler()
@@ -77,11 +81,14 @@ class Line extends zrender.Group {
      * @private
      */
     _createStartEndPoint() {
+      if (!this.path || this.path.length === 0) {
+        return
+      }
       const startPointOpt = {
-        x: this.path[0].x,
-        y: this.path[0].y,
+        x: this.path[0][0],
+        y: this.path[0][0],
         ondrag: (event) => {
-          this._connectMove(event, 0)
+          this._connectMove(event, true)
         }
       }
       Object.assign(startPointOpt, circleOptions)
@@ -92,7 +99,7 @@ class Line extends zrender.Group {
         x: this.path[this.path.length - 1].x,
         y: this.path[this.path.length - 1].y,
         ondrag: (event) => {
-          this._connectMove(event, this.path.length - 1)
+          this._connectMove(event, false)
         }
       }
       Object.assign(endPointOpt, circleOptions)
@@ -105,13 +112,14 @@ class Line extends zrender.Group {
      * @private
      */
     _createLineHandler() {
-      if (this.path.length < 4) {
+      if (this.path === null || this.path === undefined || this.path.length < 4) {
         return
       }
       for (let i = 1; i < this.path.length - 2; i++) {
         const point = this.path[i]
         const nextPoint = this.path[i + 1]
         const config = {
+          z1: this.z1,
           cursor: nextPoint.x === point.x ? 'ew-resize' : 'ns-resize',
           x: (nextPoint.x + point.x) / 2,
           y: (nextPoint.y + point.y) / 2,
@@ -122,6 +130,7 @@ class Line extends zrender.Group {
         Object.assign(config, circleOptions)
         const handler = new zrender.Circle(config)
         this.pathPoints.push(handler)
+        debugger
         this.add(handler)
       }
     }
@@ -134,12 +143,12 @@ class Line extends zrender.Group {
     }
 
     /**
-     * 更新路劲
-     * @param {Array[][]} path
-     * @param {NodeBox} startBox 起点节点
+     * 触发更新连线信息
+     * @param {Array[][]} path  线路路径
+     * @param {NodeBox} startBox 起点节点对象
      * @param {Direction} startDirection 起始方向
      * @param {NodeBox} endBox  结束节点
-     * @param {Direction} endDirection 起始方向
+     * @param {Direction} endDirection 结束方向
      */
     updatePath(path, startBox, startDirection, endBox, endDirection) {
       if (!path) return
@@ -173,36 +182,64 @@ class Line extends zrender.Group {
       this.endPoint.y = path[path.length - 1][1]
       this.endPoint.dirty()
 
-      for (let i = 0; i < path.length; i++) {
-        path[i] = { x: path[i][0], y: path[i][1] }
-      }
       this.lineView.updatePath(path)
       this._removeLineHandler()
       this._createLineHandler()
     }
 
     /**
-     * 线段推动
+     * 连线的起止点拖动
      * @param event e
-     * @param {number} index 节点序号
+     * @param {boolean} isStart 是否拖动的起点
      * @private
      */
-    _connectMove(event, index) {
-      if ((index === 0 || index === this.path.length - 1) && this.workbench.getDragEnter() !== null) {
-        this.alginBorder(index,
-          { x: event.offsetX, y: event.offsetY },
-          this.workbench.getDragEnter())
-      } else {
-        this._movePath(event, index)
-      }
-    }
+    _connectMove(event, isStart) {
+      let boxDirection = null
+      let position = { x: event.offsetX, y: event.offsetY }
+      let overBox = this.workbench.getDragEnter([event.offsetX, event.offsetY])
 
-    _movePath(event, number) {
-      this.path[number] = {
-        x: event.offsetX,
-        y: event.offsetY
+      // 1.计算鼠标当前落在那个节点上,落到的位置在哪儿
+      if (overBox !== null) {
+        const endAl = alignBorder(position, overBox)
+        boxDirection = endAl.direction
+        position = endAl.pos
+      } else {
+        // 2. 如果没有落点，则在鼠标位置创造一个虚拟box
+        overBox = {
+          x: position.x,
+          y: position.y,
+          width: 0,
+          height: 0
+          // direction: null
+        }
+        boxDirection = isStart
+          ? getDirection([position.x, position.y], this.path[this.path.length - 1])
+          : getDirection(this.path[0], [position.x, position.y])
       }
-      this.lineView.dirty()
+
+      const startBox = isStart ? overBox : this.workbench.getBoxByName(this.from.name)
+      const endBox = !isStart ? overBox : this.workbench.getBoxByName(this.to.name)
+
+      const path = createPath(
+        {
+          x: startBox.x,
+          y: startBox.y,
+          width: startBox.width,
+          height: startBox.height,
+          direction: isStart ? boxDirection : this.from.direction,
+          anchor: isStart ? position : null
+        }, {
+          x: endBox.x,
+          y: endBox.y,
+          width: endBox.width,
+          height: endBox.height,
+          direction: this.to.direction,
+          anchor: !isStart ? position : null
+        }, 20
+      )
+      this.updatePath(path,
+        isStart ? startBox : null, isStart ? boxDirection : this.from.direction,
+        !isStart ? endBox : null, !isStart ? boxDirection : this.to.direction)
     }
 
     /**
@@ -233,6 +270,12 @@ class Line extends zrender.Group {
       this.updatePath(path, startBox, this.from.direction, endBox, this.to.direction)
     }
 
+    /**
+     * @deprecated
+     * @param index
+     * @param position
+     * @param box
+     */
     alginBorder(index, position, box) {
       if (box === null) {
         return
@@ -257,7 +300,7 @@ class Line extends zrender.Group {
     }
 
     /**
-     *
+     * 调整线材的链接中间
      * @param event
      * @param i
      * @param point

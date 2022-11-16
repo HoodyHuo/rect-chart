@@ -66,15 +66,6 @@ export default {
         }
       ],
       lineList: [
-        {
-          from: 'zrender1',
-          to: 'zrender2',
-          path: [
-            { x: 100, y: 100 },
-            { x: 220, y: 120 },
-            { x: 450, y: 100 }
-          ]
-        }
         // {
         //   from: 'zrender2',
         //   to: 'zrender3',

@@ -38,12 +38,9 @@ function getOrigin(box) {
 
 /**
  * 计算2个位置的朝向
- * @param from
- * @param {number} from.x from x
- * @param {number} from.y from y
- * @param to
- * @param {number} to.x to
- * @param {number} to.y to
+ * @param {number[][]} from
+
+ * @param {number[][]} to
  *
  * @returns {string}
  */

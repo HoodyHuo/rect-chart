@@ -9,6 +9,18 @@ export const subV = (v1, v2) => {
 
 /**
  *
+ * @param {number[]} position
+ * @param {{x:number,y:number,width:number,height:number}} box
+ */
+export const inBox = (position, box) => {
+  return position[0] >= box.x &&
+      position[0] <= box.x + box.width &&
+      position[1] >= box.y &&
+      position[1] <= box.y + box.height
+}
+
+/**
+ *
  * @param {number[]} v1
  * @param {number[]} v2
  * @return {unknown[]}

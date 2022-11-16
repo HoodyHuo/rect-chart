@@ -40,8 +40,6 @@ class NodeBox extends zrender.Group {
      * @param {boolean} options.draggable 是否可以拖动
      * @param {function} options.selectChange 选中回调函数
      * @param {function} options.move 被拖拽事件
-     * @param {function} options.onDragEnter 有东西托进入
-     * @param {function} options.onDragLeave 有东西脱出
      *
      * @param {function} options.onCreateLine
      * @param {function} options.onMoveLine
@@ -68,8 +66,6 @@ class NodeBox extends zrender.Group {
         state: options.state,
         style: {
         },
-        ondragenter: options.onDragEnter,
-        ondragleave: options.onDragLeave,
         // group options
         draggable: true
       })

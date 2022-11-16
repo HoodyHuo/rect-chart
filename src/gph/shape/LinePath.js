@@ -33,9 +33,10 @@ class LinePath extends zrender.Path {
   buildPath(ctx, shapeCfg, inBatch) {
     // super.buildPath(ctx, shapeCfg, inBatch)
     const path = this.data
-    ctx.moveTo(path[0].x, path[0].y)
+    if (!path) return
+    ctx.moveTo(path[0][0], path[0][1])
     for (let i = 1; i < path.length; i++) {
-      ctx.lineTo(path[i].x, path[i].y)
+      ctx.lineTo(path[i][0], path[i][1])
     }
   }
 

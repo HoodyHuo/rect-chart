@@ -1,11 +1,12 @@
-import { Direction } from '@/gph/orth/Constant'
+import { Direction } from './orth/Constant'
 
 const Zrender = require('zrender')
 import NodeBox from './NodeBox'
 import EditShape from './shape/EditShape'
 import Line from './shape/Line'
 import { calculateScalePosition, createPath } from './orth'
-import { culaPosition, subDirection } from '@/gph/shape/tool'
+import { culaPosition, subDirection } from './shape/tool'
+import { inBox } from './orth/util'
 
 class Workbench {
   el // the DOM element
@@ -80,15 +81,6 @@ class Workbench {
       const opt2 = {
         selectChange: this._onNodeClick.bind(this),
         move: this._onNodeMove.bind(this),
-        onDragEnter: event => {
-          this.dragEnter = event.target.parent
-          if (event.topTarget.id === event.target.id) {
-            return
-          }
-        },
-        onDragLeave: event => {
-          this.dragEnter = null
-        },
         onCreateLine: this._onCreateLine.bind(this),
         onMoveLine: this._onMoveLine.bind(this),
         onEndLine: this._onEndLine.bind(this)
@@ -100,8 +92,23 @@ class Workbench {
       this.boxList.push(nodeBox)
     }
   }
-  getDragEnter() {
-    return this.dragEnter
+
+  /**
+   * 获取当前鼠标悬停box
+   * @param {number[]} position
+   *
+   * @return {NodeBox} mouseover node
+   */
+  getDragEnter(position) {
+    // return this.dragEnter
+    let box = null
+    for (let i = 0; i < this.boxList.length; i++) {
+      if (inBox(position, this.boxList[i]) &&
+          (box === null || this.boxList[i].z1 > box.z1)) {
+        box = this.boxList[i]
+      }
+    }
+    return box
   }
 
   /**
@@ -211,6 +218,16 @@ class Workbench {
     this.tempLine = null
   }
 
+  removeLine(line) {
+    for (let i = 0; i < this.lineList; i++) {
+      if (line === this.lineList[i]) {
+        this.lineList.splice(i, 1)
+        break
+      }
+    }
+    this.zr.remove(line)
+  }
+
   _onNodeClick(event, box) {
     if (this.selectedBox !== box) {
       if (this.selectedBox !== null) {
@@ -255,12 +272,17 @@ class Workbench {
     for (let i = 0; i < this.lineList.length; i++) {
       const line = this.lineList[i]
       if (box.name === line.from.name || box.name === line.to.name) {
-        line.updateBoxMove(this._getBoxByName(line.from.name), this._getBoxByName(line.to.name))
+        line.updateBoxMove(this.getBoxByName(line.from.name), this.getBoxByName(line.to.name))
       }
     }
   }
 
-  _getBoxByName(name) {
+  /**
+   * 通过名称获取线条
+   * @param name
+   * @return {NodeBox}
+   */
+  getBoxByName(name) {
     for (let i = 0; i < this.boxList.length; i++) {
       if (this.boxList[i].name === name) {
         return this.boxList[i]
