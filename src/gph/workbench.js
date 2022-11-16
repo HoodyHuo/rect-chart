@@ -155,7 +155,8 @@ class Workbench {
         direction: direction
       },
       to: null,
-      workbench: this
+      workbench: this,
+      clickCallback: this._onLineClick.bind(this)
     })
     this.zr.add(line)
     this.tempLine = line
@@ -239,6 +240,9 @@ class Workbench {
         this.selectedBox.selected(true)
         this.resizeBox.show(box)
       }
+      if (event !== null) {
+        this._onLineClick(null)
+      }
     }
     /**
      * 上报选择事件
@@ -246,6 +250,19 @@ class Workbench {
      * @param target 盒子绑定的数据对象
      */
     this.clickNodeCallback(event, box ? box.target : null)
+  }
+  _onLineClick(event, line) {
+    for (let i = 0; i < this.lineList.length; i++) {
+      // if (this.lineList[i] !== line) {
+      this.lineList[i].selected(false)
+      // }
+    }
+    line.selected(true)
+    this.selectedLine = line
+    if (event !== null) {
+      this._onNodeClick(null)
+      this.resizeBox.hide()
+    }
   }
 
   /**
@@ -322,7 +339,13 @@ class Workbench {
   _createLines() {
     for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].workbench = this
-      const line = new Line(this.lines[i])
+      const line = new Line({
+        path: this.lines[i].path,
+        from: this.lines[i].from,
+        to: this.lines[i].to,
+        workbench: this,
+        clickCallback: this._onLineClick.bind(this)
+      })
 
       this.lineList.push(line)
       this.zr.add(line)

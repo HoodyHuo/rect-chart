@@ -55,6 +55,7 @@ class Line extends zrender.Group {
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.from
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.to
      * @param {Workbench} options.workbench
+     * @param {Workbench} options.clickCallback
      */
     constructor(options) {
       super({
@@ -69,6 +70,11 @@ class Line extends zrender.Group {
       this.path = options.path
       this.workbench = options.workbench
       this.isSelected = true
+      this.clickCallback = options.clickCallback
+      this.onclick = (event) => {
+        console.log(this.from.name + '--' + this.to.name)
+        options.clickCallback(event, this)
+      }
       this._createLine()
       this._createStartEndPoint()
       this._createLineHandler()
@@ -81,7 +87,8 @@ class Line extends zrender.Group {
     _createLine() {
       this.lineView = new LinePath({
         data: this.path,
-        silent: true
+        // silent: true,
+        draggable: false
       })
       this.add(this.lineView)
     }
@@ -130,9 +137,9 @@ class Line extends zrender.Group {
         const nextPoint = this.path[i + 1]
         const config = {
           z1: this.z1,
-          cursor: nextPoint.x === point.x ? 'ew-resize' : 'ns-resize',
-          x: (nextPoint.x + point.x) / 2,
-          y: (nextPoint.y + point.y) / 2,
+          cursor: nextPoint[0] === point[0] ? 'ew-resize' : 'ns-resize',
+          x: (nextPoint[0] + point[0]) / 2,
+          y: (nextPoint[1] + point[1]) / 2,
           ondrag: (event) => {
             this._lineHandlerMove(event, i, point, nextPoint)
           }
@@ -140,8 +147,23 @@ class Line extends zrender.Group {
         Object.assign(config, circleOptions)
         const handler = new zrender.Circle(config)
         this.pathPoints.push(handler)
+        this.isSelected ? handler.show() : handler.hide()
         this.add(handler)
       }
+    }
+
+    /**
+     * 设置线段选中状态
+     * @param isSelected
+     */
+    selected(isSelected) {
+      for (let i = 0; i < this.pathPoints.length; i++) {
+        isSelected ? this.pathPoints[i].show() : this.pathPoints[i].hide()
+      }
+      isSelected ? this.startPoint.show() : this.startPoint.hide()
+      isSelected ? this.endPoint.show() : this.endPoint.hide()
+      this.isSelected = isSelected
+      this.dirty()
     }
 
     /**
@@ -321,13 +343,13 @@ class Line extends zrender.Group {
      * @private
      */
     _lineHandlerMove(event, i, point, nextPoint) {
-      const dx = nextPoint.x === point.x ? event.offsetX - (nextPoint.x + point.x) / 2 : 0
-      const dy = nextPoint.y === point.y ? event.offsetY - (nextPoint.y + point.y) / 2 : 0
+      const dx = nextPoint[0] === point[0] ? event.offsetX - (nextPoint[0] + point[0]) / 2 : 0
+      const dy = nextPoint[1] === point[1] ? event.offsetY - (nextPoint[1] + point[1]) / 2 : 0
 
-      this.path[i].x += dx
-      this.path[i].y += dy
-      this.path[i + 1].x += dx
-      this.path[i + 1].y += dy
+      this.path[i][0] += dx
+      this.path[i][1] += dy
+      this.path[i + 1][0] += dx
+      this.path[i + 1][1] += dy
 
       this._removeLineHandler()
       this._createLineHandler()

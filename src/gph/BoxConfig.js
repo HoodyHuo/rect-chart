@@ -52,6 +52,7 @@ export default {
   // 线段
   Line: {
     lineWidth: 5, // 线条粗细
+    lineSpeed: 50,
     // 线条颜色
     color: new zrender.LinearGradient(0, 0, 0, 1, [
       {

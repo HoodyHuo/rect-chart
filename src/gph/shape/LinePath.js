@@ -27,7 +27,7 @@ class LinePath extends zrender.Path {
         this.style.lineDashOffset--
       }
       this.dirty()
-    }, 20)
+    }, LineConfig.lineSpeed)
   }
 
   buildPath(ctx, shapeCfg, inBatch) {
