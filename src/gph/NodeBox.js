@@ -61,8 +61,7 @@ class NodeBox extends zrender.Group {
       // 创建展示shape
       this.view = new ViewBackgroundShape({
         box: this,
-        z: options.z,
-        z2: 10,
+        z1: options.z,
         width: options.width,
         height: options.height,
         name: 'node',
@@ -76,8 +75,7 @@ class NodeBox extends zrender.Group {
       })
       this.fontView = new zrender.Text({
         box: this,
-        z: options.z,
-        z2: 20,
+        z1: options.z,
         silent: true,
         style: {
           text: options.name,
@@ -96,8 +94,7 @@ class NodeBox extends zrender.Group {
       this.connectShape = new ConnectShape({
         x: 0,
         y: 0,
-        z: options.z,
-        z2: 30,
+        z1: options.z,
         width: options.width,
         height: options.height,
         draggable: false,
@@ -106,6 +103,7 @@ class NodeBox extends zrender.Group {
         onMoveLine: options.onMoveLine,
         onEndLine: options.onEndLine
       })
+      this.connectShape.hide()
       this.add(this.connectShape)
 
       // 绑定事件
@@ -125,7 +123,9 @@ class NodeBox extends zrender.Group {
       this.fontView.attr({
         style: {
           fill: (isSelected ? BoxFont.colorSelected : BoxFont.color)
-        }})
+        }
+      })
+      isSelected ? this.connectShape.show() : this.connectShape.hide()
     }
     resize(x, y, width, height) {
       this.attr('x', x)

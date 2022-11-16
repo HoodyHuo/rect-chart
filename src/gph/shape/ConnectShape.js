@@ -68,6 +68,7 @@ class ConnectShape extends zrender.Group {
 
     createHandlePoints() {
       const topPointConfig = {
+        z1: this.z,
         x: this.width / 2,
         y: 0,
         ondragstart: (evnet) => {
@@ -84,6 +85,7 @@ class ConnectShape extends zrender.Group {
       this.pointers[Direction.TOP] = new zrender.Circle(topPointConfig)
 
       const bottomPointConfig = {
+        z1: this.z,
         x: this.width / 2,
         y: this.height,
         ondragstart: (event) => {
@@ -100,6 +102,7 @@ class ConnectShape extends zrender.Group {
       this.pointers[Direction.BOTTOM] = new zrender.Circle(bottomPointConfig)
 
       const leftPointConfig = {
+        z1: this.z,
         x: 0,
         y: this.height / 2,
         ondragstart: (event) => {
@@ -116,6 +119,7 @@ class ConnectShape extends zrender.Group {
       this.pointers[Direction.LEFT] = new zrender.Circle(leftPointConfig)
 
       const rightPointConfig = {
+        z1: this.z,
         x: this.width,
         y: this.height / 2,
         ondragstart: (event) => {
