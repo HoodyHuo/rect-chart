@@ -3,6 +3,8 @@ const zrender = require('zrender')
 import Nodebox from '../NodeBox'
 import Config from '../BoxConfig'
 const EditBox = Config.EditBox
+
+/** 尺寸调整控件统一参数 */
 const circleOptions = {
   zlevel: 10,
   shape: {
@@ -15,6 +17,7 @@ const circleOptions = {
   draggable: true
 }
 
+/** 各节点位置名称 */
 const positionKey = {
   leftTop: 'left-top',
   centerTop: 'center-top',
@@ -47,7 +50,7 @@ class EditShape extends zrender.Group {
 
     isVisible // 是否显示
 
-    target
+    parentBox
     onSizeChange
     /**
      * @param {number} options.x X
@@ -62,12 +65,12 @@ class EditShape extends zrender.Group {
       this.onSizeChange = options.onSizeChange
       this.createHandlePoints()
     }
-    // eslint-disable-next-line
-    setVisible(visible) {
 
-    }
-
+    /**
+   * 创建拖拽点
+   */
     createHandlePoints() {
+      // 左上方
       const leftTopPointConfig = {
         cursor: 'nw-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -79,6 +82,7 @@ class EditShape extends zrender.Group {
       this.leftTopPoint = new zrender.Circle(leftTopPointConfig)
       this.add(this.leftTopPoint)
 
+      // 正上方
       const centerTopPointConfig = {
         cursor: 'n-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -90,6 +94,7 @@ class EditShape extends zrender.Group {
       this.centerTopPoint = new zrender.Circle(centerTopPointConfig)
       // this.add(this.centerTopPoint)
 
+      // 右上方
       const rightTopPointConfig = {
         cursor: 'ne-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -101,6 +106,7 @@ class EditShape extends zrender.Group {
       this.rightTopPoint = new zrender.Circle(rightTopPointConfig)
       this.add(this.rightTopPoint)
 
+      // 正右侧
       const rightCenterPointConfig = {
         cursor: 'e-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -112,6 +118,7 @@ class EditShape extends zrender.Group {
       this.rightCenterPoint = new zrender.Circle(rightCenterPointConfig)
       // this.add(this.rightCenterPoint)
 
+      // 右下方
       const rightBottomPointConfig = {
         cursor: 'se-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -123,6 +130,7 @@ class EditShape extends zrender.Group {
       this.rightBottomPoint = new zrender.Circle(rightBottomPointConfig)
       this.add(this.rightBottomPoint)
 
+      // 正下方
       const centerBottomConfig = {
         cursor: 's-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -134,6 +142,7 @@ class EditShape extends zrender.Group {
       this.centerBottomPoint = new zrender.Circle(centerBottomConfig)
       // this.add(this.centerBottomPoint)
 
+      // 左下方
       const leftBottomConfig = {
         cursor: 'sw-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -145,6 +154,7 @@ class EditShape extends zrender.Group {
       this.leftBottomPoint = new zrender.Circle(leftBottomConfig)
       this.add(this.leftBottomPoint)
 
+      // 正左侧
       const leftCenterConfig = {
         cursor: 'w-resize',
         ondragstart: this._memTargetState.bind(this),
@@ -157,9 +167,15 @@ class EditShape extends zrender.Group {
       // this.add(this.leftCenterPoint)
     }
 
+    /**
+   * 处理尺寸拖拽事件
+   * @param event  zrender event
+   * @param target 拖拽的那个点
+   * @private
+   */
     _handlePointDrag(event, target) {
-      // console.log(event.offsetX, event.offsetY)
       event.stop()
+      // 记录参数
       const eX = event.offsetX
       const eY = event.offsetY
       const x = this.targetOrigin.x
@@ -167,54 +183,53 @@ class EditShape extends zrender.Group {
       const width = this.targetOrigin.width
       const height = this.targetOrigin.height
 
+      // 根据当给脱脂位置决定节点移动到什么状态
       switch (target) {
         case positionKey.leftTop:
-          this.target.resize(eX, eY,
+          this.parentBox.resize(eX, eY,
             Math.abs(x + width - eX), Math.abs(y + height - eY))
           break
         case positionKey.centerTop:
-          this.target.resize(x, eY, width, Math.abs(y + height - eY))
+          this.parentBox.resize(x, eY, width, Math.abs(y + height - eY))
           break
         case positionKey.rightTop:
-          this.target.resize(x, eY,
+          this.parentBox.resize(x, eY,
             Math.abs(eX - x), y + height - eY)
           break
         case positionKey.rightCenter:
-          this.target.resize(x, y, eX - x, height)
+          this.parentBox.resize(x, y, eX - x, height)
           break
         case positionKey.rightBottom:
-          this.target.resize(x, y, Math.abs(eX - x), Math.abs(eY - y))
+          this.parentBox.resize(x, y, Math.abs(eX - x), Math.abs(eY - y))
           break
         case positionKey.centerBottom:
-          this.target.resize(x, y, width, Math.abs(eY - y))
+          this.parentBox.resize(x, y, width, Math.abs(eY - y))
           break
         case positionKey.leftBottom:
-          this.target.resize(eX, y,
+          this.parentBox.resize(eX, y,
             Math.abs(x + width - eX), Math.abs(eY - y))
           break
         case positionKey.leftCenter:
-          this.target.resize(eX, y, Math.abs(x + width - eX), height)
+          this.parentBox.resize(eX, y, Math.abs(x + width - eX), height)
           break
       }
-      this._moveToBox(this.target)
-      this.onSizeChange(this.target)
+      // 将自己移动到盒子的位置
+      this._moveToBox(this.parentBox)
+      // 通知workbench 盒子尺寸变化
+      this.onSizeChange(this.parentBox)
     }
     /**
      * Handle resizeBox show
      * @param { Nodebox } box
      */
     show(box) {
-      this.target = box
+      this.parentBox = box
       super.show()
       this._moveToBox(box)
     }
 
-    hide() {
-      super.hide()
-    }
-
     /**
-     *
+     * 移动尺寸编辑器到节点实例的位置覆盖
      * @param { Nodebox } box
      * @private
      */
@@ -243,12 +258,17 @@ class EditShape extends zrender.Group {
       this.leftCenterPoint.attr('x', box.x)
       this.leftCenterPoint.attr('y', box.y + box.height / 2)
     }
+
+    /**
+   * 临时保存节点实例的位置、尺寸信息
+   * @private
+   */
     _memTargetState() {
       this.targetOrigin = {
-        x: this.target.x,
-        y: this.target.y,
-        width: this.target.width,
-        height: this.target.height
+        x: this.parentBox.x,
+        y: this.parentBox.y,
+        width: this.parentBox.width,
+        height: this.parentBox.height
       }
     }
 }

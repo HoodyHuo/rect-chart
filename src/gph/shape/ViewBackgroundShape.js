@@ -16,7 +16,6 @@ class ViewBackgroundShape extends zrender.Path {
       options.style.strokeNoScale = true
       options.style.stroke = BoxBorder.color
 
-      // eslint-disable-next-line no-debugger
       super(options)
       this.state = options.state || 'default'
       this.name = options.name

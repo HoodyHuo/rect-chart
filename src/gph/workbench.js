@@ -8,31 +8,31 @@ import { calculateScalePosition, createPath } from './orth'
 import { culaPosition, subDirection } from './shape/tool'
 import { inBox } from './orth/util'
 
+/**
+ * 图形控制台
+ */
 class Workbench {
-  el // the DOM element
-  zr // zrender instance
-  nodes // array of node json
-  lines // array of relative path
+  el // 挂载的dom元素
+  zr // zrender 实例
+  nodes // 节点数据记录
+  lines // 线段数据记录
 
-  selectedBox = null // the selected node
-  selectedLine = null // the selected line
-  boxList = [] // array of DrawNode
-  lineList = [] // array of RelativePath
-  resizeBox = null
+  selectedBox = null // 当前被选中的节点
+  selectedLine = null // 当前被选中的线段
+  boxList = [] // 节点实例列表
+  lineList = [] // 线段实例列表
+  resizeBox = null // 缩放盒子实例
 
-  dragEnter = null // 当前拖拽进入的对象
-  clickNodeCallback // callback
+  clickNodeCallback // 节点点击回调函数
 
-  tempLine = null // 当前正在拖动的连接线
-
-  eventMap = {}
+  tempLine = null // 当前正在创建的线段实例
 
   /**
      * @constructor
-     * @param options.el
-   *   @param options.nodes
-   *   @param options.lines
-   *   @param options.clickNode
+     * @param options.el 挂载的dom元素
+   *   @param options.nodes 节点数据记录
+   *   @param options.lines 线段数据记录
+   *   @param options.clickNode 节点点击回调函数
      */
   constructor(options) {
     this.el = options.el
@@ -47,6 +47,10 @@ class Workbench {
     this._createLines()
   }
 
+  /**
+   * 保存函数，提取所有节点和线段记录，用于下次加载
+   * @return {{nodes: [], lines: []}}
+   */
   save() {
     const lines = []
 
@@ -66,15 +70,20 @@ class Workbench {
     return { lines, nodes }
   }
 
+  /**
+   * 初始化绑定事件
+   * @private
+   */
   _bindingEvent() {
     this.zr.on('click', (e) => {
       console.dir(e.offsetX + '-' + e.offsetY)
     })
-    this.zr.on('mouseup', () => {
-      this.dragEnter = null
-    })
   }
 
+  /**
+   * 初始化时根据节点数据创建节点实例
+   * @private
+   */
   _createNodes() {
     for (let i = 0; i < this.nodes.length; i++) {
       const nodeData = this.nodes[i]
@@ -94,13 +103,13 @@ class Workbench {
   }
 
   /**
-   * 获取当前鼠标悬停box
-   * @param {number[]} position
+   * 获取当前鼠标悬停节点实例
+   * 通过循环判断覆盖的box，并返回z1最高的节点实例
+   * @param {number[]} position 需要判断的位置
    *
    * @return {NodeBox} mouseover node
    */
-  getDragEnter(position) {
-    // return this.dragEnter
+  getPositionBox(position) {
     let box = null
     for (let i = 0; i < this.boxList.length; i++) {
       if (inBox(position, this.boxList[i]) &&
@@ -115,22 +124,11 @@ class Workbench {
    * 当鼠标拖拽开始，创建连线
    * @param {NodeBox} startBox 触发的节点
    * @param {Direction} direction 起始方向
-   * @param {Object} position 鼠标位置
-   * @param {number} position.x
-   * @param {number} position.y
+   * @param {{x:number,y:number}} position 鼠标位置
    *
    * @private
    */
   _onCreateLine(startBox, direction, position) {
-    // {
-    //   from: 'zrender1',
-    //       to: 'zrender2',
-    //     path: [
-    //   { x: 100, y: 100 },
-    //   { x: 220, y: 120 },
-    //   { x: 450, y: 100 }
-    // ]
-    // }
     const path = createPath({
       x: startBox.x,
       y: startBox.y,
@@ -167,9 +165,7 @@ class Workbench {
    * 当鼠标拖拽，调整连线
    * @param {NodeBox} startBox 触发的节点
    * @param {Direction} startDirection 起始方向
-   * @param {Object} position 鼠标位置
-   * @param {number} position.x
-   * @param {number} position.y
+   * @param {{x:number,y:number}} position 鼠标位置
    * @param {NodeBox} endBox 触发的节点
    * @param {Direction} endDirection 起始方向
    *
@@ -201,9 +197,7 @@ class Workbench {
    * 当鼠标拖拽，调整连线
    * @param {NodeBox} startBox 触发的节点
    * @param {Direction} startDirection 起始方向
-   * @param {Object} position 鼠标位置
-   * @param {number} position.x
-   * @param {number} position.y
+   * @param {{x:number,y:number}} position 鼠标位置
    * @param {NodeBox} endBox 触发的节点
    * @param {Direction} endDirection 起始方向
    *
@@ -228,7 +222,14 @@ class Workbench {
     this.zr.remove(line)
   }
 
+  /**
+   * 处理节点反馈的点击事件
+   * @param event
+   * @param box
+   * @private
+   */
   _onNodeClick(event, box) {
+    /** 切换选择 */
     if (this.selectedBox !== box) {
       if (this.selectedBox !== null) {
         this.selectedBox.selected(false)
@@ -247,6 +248,10 @@ class Workbench {
     this.clickNodeCallback(event, box ? box.target : null)
   }
 
+  /**
+   * 初始化尺寸控制盒子实例
+   * @private
+   */
   _initResizeBox() {
     const resizeBox = new EditShape({
       onSizeChange: this._onSizeChange.bind(this)
@@ -256,9 +261,23 @@ class Workbench {
     this.resizeBox = resizeBox
   }
 
+  /**
+   * 监听节点实例尺寸变化事件
+   * @param box
+   * @param param
+   * @private
+   */
   _onSizeChange(box, param) {
+    /** 通知节点实例关联线段重绘 */
     this._redrawLineWhenBoxChange(box)
   }
+
+  /**
+   * 处理当节点移动时的事件
+   * @param event zrender 事件
+   * @param box 移动的节点实例
+   * @private
+   */
   _onNodeMove(event, box) {
     // 如果有缩放框，则同步移动缩放框
     if (this.selectedBox === box) {
@@ -268,6 +287,11 @@ class Workbench {
     this._redrawLineWhenBoxChange(box)
   }
 
+  /**
+   * 重绘盒子关联线段
+   * @param box
+   * @private
+   */
   _redrawLineWhenBoxChange(box) {
     for (let i = 0; i < this.lineList.length; i++) {
       const line = this.lineList[i]
@@ -278,9 +302,9 @@ class Workbench {
   }
 
   /**
-   * 通过名称获取线条
-   * @param name
-   * @return {NodeBox}
+   * 通过节点实例名称获取节点实例
+   * @param name 名称
+   * @return {NodeBox} 节点实例
    */
   getBoxByName(name) {
     for (let i = 0; i < this.boxList.length; i++) {
@@ -291,6 +315,10 @@ class Workbench {
     return null
   }
 
+  /**
+   * 根据线段数据创建线段实例
+   * @private
+   */
   _createLines() {
     for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].workbench = this

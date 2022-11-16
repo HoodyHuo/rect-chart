@@ -6,7 +6,6 @@ import BoxConfig from '../BoxConfig'
 import { calculatePosition, calculateScalePosition, createPath, getDirection } from '@/gph/orth'
 const LineConfig = BoxConfig.Line.handle
 
-// eslint-disable-next-line no-unused-vars
 const circleOptions = {
   zlevel: 10,
   shape: {
@@ -20,35 +19,46 @@ const circleOptions = {
 }
 
 /**
- * 连线
+ * 连线类
  */
 class Line extends zrender.Group {
     Type = 'Line'
 
-    // data
+    /** 线路数据 number[][] */
     path
+
+    /** 起点、终点信息 from、to
+     *
+     *     name: string, //节点 名称
+     *     scaleX: x, // 在节点内的相对位置
+     *     scaleY: y,
+     *     direction: startDirection //起点朝向
+     * */
     from
     to
 
     isSelected
 
-    // view
+    // 线条绘制层
     lineView = null
-    // handlers
+    // 线段调整按钮列表
     pathPoints = []
+    // 起点连接头
     startPoint = null
+    // 终点连接头
     endPoint = null
 
     /**
+     * 构造函数
      * @constructor
-     * @param {Array[x:number,y:number]} options.path
-     * @param {NodeBox} options.from
-     * @param {NodeBox} options.to
+     * @param {number[number[]]} options.path
+     * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.from
+     * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.to
      * @param {Workbench} options.workbench
      */
     constructor(options) {
       super({
-        z: 30,
+        zlevel: 30,
         x: 0,
         y: 0,
         height: 0,
@@ -82,7 +92,7 @@ class Line extends zrender.Group {
      */
     _createStartEndPoint() {
       if (!this.path || this.path.length === 0) {
-        return
+        this.path = [[0, 0]]
       }
       const startPointOpt = {
         x: this.path[0][0],
@@ -130,11 +140,14 @@ class Line extends zrender.Group {
         Object.assign(config, circleOptions)
         const handler = new zrender.Circle(config)
         this.pathPoints.push(handler)
-        debugger
         this.add(handler)
       }
     }
 
+    /**
+     * 移除线段调整按钮
+     * @private
+     */
     _removeLineHandler() {
       for (let i = 0; i < this.pathPoints.length; i++) {
         this.remove(this.pathPoints[i])
@@ -196,7 +209,7 @@ class Line extends zrender.Group {
     _connectMove(event, isStart) {
       let boxDirection = null
       let position = { x: event.offsetX, y: event.offsetY }
-      let overBox = this.workbench.getDragEnter([event.offsetX, event.offsetY])
+      let overBox = this.workbench.getPositionBox([event.offsetX, event.offsetY])
 
       // 1.计算鼠标当前落在那个节点上,落到的位置在哪儿
       if (overBox !== null) {
@@ -301,10 +314,10 @@ class Line extends zrender.Group {
 
     /**
      * 调整线材的链接中间
-     * @param event
-     * @param i
-     * @param point
-     * @param nextPoint
+     * @param event zrender event
+     * @param i 移动的点序号（介于 i 和 i+1）
+     * @param point i
+     * @param nextPoint i+1
      * @private
      */
     _lineHandlerMove(event, i, point, nextPoint) {

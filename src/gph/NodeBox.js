@@ -18,7 +18,7 @@ const defaultOptions = {
 }
 
 /**
- * 节点框
+ * 节点类
  */
 class NodeBox extends zrender.Group {
     view // 背景shape
@@ -29,17 +29,18 @@ class NodeBox extends zrender.Group {
 
     isSelected = false
     /**
+     * 构造函数
      * @param {number} options.x X
      * @param {number} options.y Y
      * @param {number} options.z z 层叠顺序
      * @param {number} options.width 宽
      * @param {number} options.height 高
      * @param {string} options.name 显示名称
-     * @param {json} options.target 节点关联对象
+     * @param {json} options.target 节点关联数据（附加数据）
      * @param {json} options.state 节点状态
      * @param {boolean} options.draggable 是否可以拖动
      * @param {function} options.selectChange 选中回调函数
-     * @param {function} options.move 被拖拽事件
+     * @param {function} options.move workbench 监听节点移动回调
      *
      * @param {function} options.onCreateLine
      * @param {function} options.onMoveLine
@@ -111,8 +112,12 @@ class NodeBox extends zrender.Group {
       }
     }
 
+    /**
+   * 设置节点实例选中状态
+   * 修改选中样式，
+   * @param isSelected
+   */
     selected(isSelected) {
-      // eslint-disable-next-line no-debugger
       this.isSelected = isSelected
       this.view.setSelected(isSelected)
 
@@ -123,6 +128,14 @@ class NodeBox extends zrender.Group {
       })
       isSelected ? this.connectShape.show() : this.connectShape.hide()
     }
+
+    /**
+   * 修改节点位置、尺寸
+   * @param x
+   * @param y
+   * @param width
+   * @param height
+   */
     resize(x, y, width, height) {
       this.attr('x', x)
       this.attr('y', y)
