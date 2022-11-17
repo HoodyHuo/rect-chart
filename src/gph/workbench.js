@@ -26,7 +26,9 @@ class Workbench {
 
   clickNodeCallback // 节点点击回调函数
 
+  tempName = 1
   tempLine = null // 当前正在创建的线段实例
+  tempNode = null // 当前正在创建的节点实例
 
   /**
      * @constructor
@@ -47,6 +49,73 @@ class Workbench {
     this._initResizeBox()
     this._createNodes()
     this._createLines()
+  }
+
+  /**
+   * 创建节点
+   * @param param 节点参数
+   * @param param.x 创建位置x
+   * @param param.y 创建位置y
+   * @param param.width 宽
+   * @param param.height 高
+   * @param param.name 显示名称（唯一）
+   *
+   * @param param.target 携带关联信息
+   * @param isFinished 是否直接创建完成
+   */
+  createNode(param, isFinished) {
+    const options = {
+      x: param.x || 0,
+      y: param.y || 0,
+      width: param.width || 200,
+      height: param.height || 100,
+      target: param.target,
+      name: param.name || '未命名' + this.tempName++,
+      selectChange: this._onNodeClick.bind(this),
+      move: this._onNodeMove.bind(this),
+      onCreateLine: this._onCreateLine.bind(this),
+      onMoveLine: this._onMoveLine.bind(this),
+      onEndLine: this._onEndLine.bind(this),
+      z: this.boxList.length
+    }
+
+    options.x = options.x + options.width / 2
+    options.y = options.y + options.height / 2
+    const node = new NodeBox(options)
+    this.zr.add(node)
+    this.tempNode = node
+    if (isFinished) {
+      this.createNodeEnd(true)
+    }
+  }
+
+  /**
+   * 移动临时节点
+   * 当鼠标保持按下状态移动时触发
+   * @param event
+   * @param position
+   */
+  tempNodeMoving(event, position) {
+    if (this.tempNode && this.tempNode instanceof NodeBox) {
+      this.tempNode.resize(
+        position.x - this.tempNode.width / 2, position.y - this.tempNode.height / 2,
+        this.tempNode.width, this.tempNode.height)
+    }
+  }
+
+  /**
+   * 临时节点完成
+   * 在鼠标抬起或移出范围时触发
+   * @param {boolean} isKeep 是否保留
+   */
+  createNodeEnd(isKeep) {
+    if (this.tempNode == null) return
+    if (isKeep) {
+      this.boxList.push(this.tempNode)
+    } else {
+      this.zr.remove(this.tempNode)
+    }
+    this.tempNode = null
   }
 
   /**
@@ -103,6 +172,7 @@ class Workbench {
     this.selectedBox = null
     this.selectedLine = null
     this.tempLine = null
+    this.resizeBox.hide()
   }
 
   /**
@@ -113,6 +183,7 @@ class Workbench {
     this.zr.on('click', (e) => {
       console.dir(e.offsetX + '-' + e.offsetY)
       if (!e.target) {
+        this.resizeBox.hide()
         this._onLineClick(null)
         this._onNodeClick(null)
       }
@@ -337,7 +408,7 @@ class Workbench {
    */
   _onNodeMove(event, box) {
     // 如果有缩放框，则同步移动缩放框
-    if (this.selectedBox === box) {
+    if (this.selectedBox && this.selectedBox.id === box.id) {
       this.resizeBox._moveToBox(box)
     }
     // 如果有连接线，同步移动连接线

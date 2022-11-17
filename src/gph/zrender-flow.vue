@@ -2,11 +2,26 @@
   <div
     ref="container"
     class="container"
+    @dragenter="createNode"
+    @dragover="nodeMove"
+    @dragleave="createDone"
   />
 </template>
 
 <script>
 import Workbench from './workbench'
+
+const _extractData = (event) => {
+  const items = event.dataTransfer.items
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i].type
+    if (item.indexOf('node') === 0) {
+      return JSON.parse(item.slice(4, item.length))
+    }
+  }
+  return null
+}
+
 export default {
   name: 'ZrenderFlow',
   props: {
@@ -33,6 +48,23 @@ export default {
     })
   },
   methods: {
+    createNode(event) {
+      // eslint-disable-next-line no-unused-vars
+      const data = _extractData(event)
+      if (data === null) {
+        console.log('拖拽元素不符合要求')
+        return
+      }
+      this.workbench.createNode({ x: event.offsetX, y: event.offsetY }, false)
+    },
+    nodeMove(event) {
+      this.workbench.tempNodeMoving(event,
+        { x: event.offsetX, y: event.offsetY })
+    },
+    createDone(event) {
+      this.workbench.createNodeEnd(!event.relatedTarget)
+    },
+
     /**
      * 处理box点击，保留最后一个选择，并上报事件
      * @param event 原始Zrender事件

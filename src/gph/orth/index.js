@@ -81,6 +81,9 @@ function _filteUselessPoints(path) {
  * @private
  */
 function _moveAnchor(path, startAnchor, endAnchor) {
+  if (!path) {
+    return
+  }
   if (startAnchor) {
     const dsx = startAnchor.x - path[0][0]
     const dsy = startAnchor.y - path[0][1]

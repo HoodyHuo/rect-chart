@@ -96,7 +96,7 @@ export default {
       default: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: '#032274'
+          color: '#234996'
         },
         {
           offset: 0.7,
@@ -106,7 +106,7 @@ export default {
       health: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: '#032274'
+          color: '#234996'
         },
         {
           offset: 0.7,
@@ -116,7 +116,7 @@ export default {
       error: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: '#032274'
+          color: '#234996'
         },
         {
           offset: 0.7,
@@ -126,7 +126,7 @@ export default {
       warning: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
-          color: '#032274'
+          color: '#234996'
         },
         {
           offset: 0.7,
