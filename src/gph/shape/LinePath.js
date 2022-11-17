@@ -1,5 +1,5 @@
 const zrender = require('zrender')
-import BoxConfig from '../BoxConfig'
+import BoxConfig from '../Config'
 const LineConfig = BoxConfig.Line
 
 /**
@@ -11,11 +11,9 @@ class LinePath extends zrender.Path {
   constructor(options) {
     options.draggable = false
     options.zlevel = 10
-    options.style = {}
     options.style.fill = null
     options.style.lineWidth = LineConfig.lineWidth
     options.style.strokeNoScale = true
-    options.style.stroke = LineConfig.color
     options.style.lineDash = 8
     super(options)
     this.data = options.data
@@ -46,6 +44,15 @@ class LinePath extends zrender.Path {
    */
   updatePath(path) {
     this.attr('data', path)
+    this.dirty()
+  }
+
+  /**
+   * zrender color
+   * @param color
+   */
+  updateColor(color) {
+    this.style.stroke = color
     this.dirty()
   }
 }

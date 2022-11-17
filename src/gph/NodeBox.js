@@ -1,5 +1,5 @@
 import ViewBackgroundShape from './shape/ViewBackgroundShape'
-import config from './BoxConfig'
+import config from './Config'
 import ConnectShape from '@/gph/shape/ConnectShape'
 const zrender = require('zrender')
 const BoxFont = config.BoxFont
@@ -83,6 +83,7 @@ class NodeBox extends zrender.Group {
           width: options.width
         }
       })
+      this._resizeFontView()
       // shape 加入当前组合
       this.add(this.view)
       this.add(this.fontView)
@@ -142,10 +143,19 @@ class NodeBox extends zrender.Group {
       this.width = width
       this.height = height
       this.view.resize(0, 0, width, height)
-      this.fontView.style.width = width
-      this.fontView.attr('style', this.fontView.style)
+      this._resizeFontView()
 
       this.connectShape.resize(width, height)
+    }
+
+    _resizeFontView() {
+      const rect = this.fontView.getBoundingRect()
+      const fontx = (this.width - rect.width) / 2
+      const fonty = (this.height - rect.height) / 2
+      this.fontView.x = fontx
+      this.fontView.y = fonty
+      this.fontView.style.width = this.width
+      this.fontView.dirty()
     }
 }
 

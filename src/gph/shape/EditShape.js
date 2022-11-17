@@ -1,7 +1,7 @@
 const zrender = require('zrender')
 // eslint-disable-next-line no-unused-vars
 import Nodebox from '../NodeBox'
-import Config from '../BoxConfig'
+import Config from '../Config'
 const EditBox = Config.EditBox
 
 /** 尺寸调整控件统一参数 */
@@ -11,8 +11,8 @@ const circleOptions = {
     r: EditBox.circleSize
   },
   style: {
-    // fill: 'transparent',
-    stroke: EditBox.circleColor
+    fill: EditBox.circleFill,
+    stroke: EditBox.circleStroke
   },
   draggable: true
 }

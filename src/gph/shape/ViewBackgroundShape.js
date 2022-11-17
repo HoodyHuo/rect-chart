@@ -1,5 +1,5 @@
 const zrender = require('zrender')
-import config from '../BoxConfig'
+import config from '../Config'
 const BoxBorder = config.BoxBorder
 
 /**
@@ -11,10 +11,10 @@ class ViewBackgroundShape extends zrender.Path {
 
     constructor(options) {
       options.draggable = false
-      options.style.fill = config.backgroundColor[(options.state || 'default')]
+      options.style.fill = config.NodeColor[(options.state || 'default')].background
       options.style.lineWidth = BoxBorder.lineWidth
       options.style.strokeNoScale = true
-      options.style.stroke = BoxBorder.color
+      options.style.stroke = config.NodeColor[(options.state || 'default')].border
 
       super(options)
       this.state = options.state || 'default'
@@ -30,18 +30,19 @@ class ViewBackgroundShape extends zrender.Path {
       ctx.lineTo(this.x, this.y)
     }
 
-    getFillColor() {
-      return config.backgroundColor[this.state] || config.backgroundColor['default']
+    getColor() {
+      return config.NodeColor[this.state].background || config.NodeColor['default']
     }
     updateState(state) {
       this.state = state
-      this.options.style.fill = this.getFillColor()
+      const color = this.getColor()
+      this.options.style.fill = color.background
+      this.options.style.stroke = color.border
       this.dirty()
     }
 
     setSelected(selected) {
       const style = this.style
-      style.stroke = selected ? BoxBorder.colorSelected : BoxBorder.color
       style.lineDash = selected ? [10] : false
       if (selected && this.selectedAnimate === null) {
         this.selectedAnimate = setInterval(() => {

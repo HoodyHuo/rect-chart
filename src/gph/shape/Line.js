@@ -2,18 +2,18 @@ import { alignBorder } from '@/gph/shape/tool'
 
 const zrender = require('zrender')
 import LinePath from './LinePath'
-import BoxConfig from '../BoxConfig'
+import Config from '../Config'
 import { calculatePosition, calculateScalePosition, createPath, getDirection } from '@/gph/orth'
-const LineConfig = BoxConfig.Line.handle
+const LineConfig = Config.Line
 
 const circleOptions = {
   zlevel: 10,
   shape: {
-    r: LineConfig.size
+    r: LineConfig.handle.size
   },
   style: {
     // fill: 'transparent',
-    stroke: LineConfig.color
+    stroke: LineConfig.handle.color
   },
   draggable: true
 }
@@ -36,6 +36,7 @@ class Line extends zrender.Group {
      * */
     from
     to
+    state // string 线路状态。（默认default）
 
     isSelected
 
@@ -51,10 +52,12 @@ class Line extends zrender.Group {
     /**
      * 构造函数
      * @constructor
-     * @param {number[number[]]} options.path
+     * @param {number[number[]]} options.path 线段路径
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.from
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.to
      * @param {Workbench} options.workbench
+     * @param {string} options.state
+     * @param {boolean} options.showHandle
      * @param {Workbench} options.clickCallback
      */
     constructor(options) {
@@ -68,8 +71,9 @@ class Line extends zrender.Group {
       this.from = options.from
       this.to = options.to
       this.path = options.path
+      this.state = options.state
       this.workbench = options.workbench
-      this.isSelected = true
+      this.isSelected = options.showHandle || false
       this.clickCallback = options.clickCallback
       this.onclick = (event) => {
         console.log(this.from.name + '--' + this.to.name)
@@ -88,6 +92,9 @@ class Line extends zrender.Group {
       this.lineView = new LinePath({
         data: this.path,
         // silent: true,
+        style: {
+          stroke: LineConfig.color[this.state] || LineConfig.color['default']
+        },
         draggable: false
       })
       this.add(this.lineView)
@@ -110,6 +117,7 @@ class Line extends zrender.Group {
       }
       Object.assign(startPointOpt, circleOptions)
       this.startPoint = new zrender.Circle(startPointOpt)
+      this.isSelected ? this.startPoint.show() : this.startPoint.hide()
       this.add(this.startPoint)
 
       const endPointOpt = {
@@ -121,6 +129,7 @@ class Line extends zrender.Group {
       }
       Object.assign(endPointOpt, circleOptions)
       this.endPoint = new zrender.Circle(endPointOpt)
+      this.isSelected ? this.endPoint.show() : this.endPoint.hide()
       this.add(this.endPoint)
     }
 
@@ -166,6 +175,11 @@ class Line extends zrender.Group {
       this.dirty()
     }
 
+    updateState(state) {
+      this.state = state
+      const color = LineConfig.color[state] || LineConfig.color['default']
+      this.lineView.updateColor(color)
+    }
     /**
      * 移除线段调整按钮
      * @private

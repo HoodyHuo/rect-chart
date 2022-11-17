@@ -40,6 +40,16 @@ export default {
      */
     onZrClick(event, node) {
       this.$emit('select', event, node)
+    },
+    /**
+     * 保存当前布置结构
+     * @return {{nodes: [], lines: []}}
+     */
+    save() {
+      return this.workbench.save()
+    },
+    clear() {
+      this.workbench.clear()
     }
   }
 

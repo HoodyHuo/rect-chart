@@ -1,7 +1,7 @@
 import { Direction } from '@/gph/orth/Constant'
 
 const zrender = require('zrender')
-import Config from '../BoxConfig'
+import Config from '../Config'
 import { alignBorder } from '@/gph/shape/tool'
 import ViewBackgroundShape from '@/gph/shape/ViewBackgroundShape'
 import { TSpan } from 'zrender'
@@ -16,8 +16,8 @@ const circleOptions = {
     r: ConnectBox.circleSize
   },
   style: {
-    // fill: 'transparent',
-    stroke: ConnectBox.circleColor
+    fill: ConnectBox.circleFill,
+    stroke: ConnectBox.circleStroke
   },
   draggable: true
 }

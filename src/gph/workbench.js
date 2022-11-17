@@ -1,5 +1,6 @@
 import { Direction } from './orth/Constant'
 
+import BoxConfig from './Config'
 const Zrender = require('zrender')
 import NodeBox from './NodeBox'
 import EditShape from './shape/EditShape'
@@ -41,6 +42,7 @@ class Workbench {
     this.zr = Zrender.init(options.el)
     this.clickNodeCallback = options.clickNode
 
+    this.el.style.backgroundColor = BoxConfig.wallpaperColor
     this._bindingEvent()
     this._initResizeBox()
     this._createNodes()
@@ -53,6 +55,14 @@ class Workbench {
    */
   save() {
     const lines = []
+    for (let i = 0; i < this.lineList.length; i++) {
+      const line = this.lineList[i]
+      lines.push({
+        from: line.from,
+        to: line.to,
+        path: line.path
+      })
+    }
 
     const nodes = []
     for (let i = 0; i < this.boxList.length; i++) {
@@ -71,12 +81,41 @@ class Workbench {
   }
 
   /**
+   * 清除所有元素
+   */
+  clear() {
+    // 清除线条
+    for (let i = 0; i < this.lineList.length; i++) {
+      this.zr.remove(this.lineList[i])
+    }
+    if (this.tempLine) {
+      this.zr.remove(this.tempLine)
+    }
+    // 清除节点
+    for (let i = 0; i < this.boxList.length; i++) {
+      this.zr.remove(this.boxList[i])
+    }
+    // 清除缓存
+    this.boxList = []
+    this.lineList = []
+    this.nodes = []
+    this.lines = []
+    this.selectedBox = null
+    this.selectedLine = null
+    this.tempLine = null
+  }
+
+  /**
    * 初始化绑定事件
    * @private
    */
   _bindingEvent() {
     this.zr.on('click', (e) => {
       console.dir(e.offsetX + '-' + e.offsetY)
+      if (!e.target) {
+        this._onLineClick(null)
+        this._onNodeClick(null)
+      }
     })
   }
 
@@ -156,6 +195,7 @@ class Workbench {
       },
       to: null,
       workbench: this,
+      showHandle: true,
       clickCallback: this._onLineClick.bind(this)
     })
     this.zr.add(line)
@@ -253,12 +293,12 @@ class Workbench {
   }
   _onLineClick(event, line) {
     for (let i = 0; i < this.lineList.length; i++) {
-      // if (this.lineList[i] !== line) {
       this.lineList[i].selected(false)
-      // }
     }
-    line.selected(true)
-    this.selectedLine = line
+    if (line) {
+      line.selected(true)
+      this.selectedLine = line
+    }
     if (event !== null) {
       this._onNodeClick(null)
       this.resizeBox.hide()
@@ -343,6 +383,7 @@ class Workbench {
         path: this.lines[i].path,
         from: this.lines[i].from,
         to: this.lines[i].to,
+        state: this.lines[i].state,
         workbench: this,
         clickCallback: this._onLineClick.bind(this)
       })
