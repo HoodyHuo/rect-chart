@@ -223,6 +223,7 @@ class EditShape extends zrender.Group {
      * @param { Nodebox } box
      */
     show(box) {
+      if (!box) return
       this.parentBox = box
       super.show()
       this._moveToBox(box)

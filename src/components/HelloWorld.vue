@@ -1,26 +1,35 @@
 <template>
   <div>
+    当前模式: {{ mode === 0 ?"查看模式":"编辑模式" }}
     <div
       class="item"
       draggable="true"
       @dragstart="pTrans"
+      @keydown="deleteSelect"
     >拖拽我</div>
     <button @click="save">保存</button>
     <button @click="clear">清除</button>
+
+    <button @click="edit">编辑模式</button>
+    <button @click="view">查看模式</button>
+
     <div class="hello">
       <zrender-flow
         ref="flow"
         class="content"
         :nodes="data.nodes"
         :lines="data.lines"
-        @select="ccc"
+        :mode="mode"
+        @select-node="ccc"
+        @select-line="ccc2"
       />
     </div>
   </div>
 </template>
 
 <script>
-import ZrenderFlow from '@/gph/zrender-flow'
+import ZrenderFlow from '../gph/zrender-flow'
+import { WorkbenchMode } from '@/gph/shape/Const'
 export default {
   name: 'HelloWorld',
   components: { ZrenderFlow },
@@ -50,7 +59,8 @@ export default {
             'target': { 'name': 'zrender4', 'age': 20 }}
         ]
       },
-      count: 1
+      count: 1,
+      mode: WorkbenchMode.VIEW
     }
   },
   methods: {
@@ -60,7 +70,10 @@ export default {
       }), 1)
     },
     // eslint-disable-next-line no-unused-vars
-    ccc(event, target) {
+    ccc(event, box, target) {
+      console.log(JSON.stringify(target) + '-click')
+    },
+    ccc2(event, line, target) {
       console.log(JSON.stringify(target) + '-click')
     },
     save() {
@@ -69,6 +82,17 @@ export default {
     },
     clear() {
       this.$refs.flow.clear()
+    },
+    edit() {
+      // this.$refs.flow.changeMode(WorkbenchMode.EDIT)
+      this.mode = WorkbenchMode.EDIT
+    },
+    view() {
+      // this.$refs.flow.changeMode(WorkbenchMode.VIEW)
+      this.mode = WorkbenchMode.VIEW
+    },
+    deleteSelect() {
+      this.$refs.flow.deleteSelect()
     }
   }
 }

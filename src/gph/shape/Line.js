@@ -1,9 +1,10 @@
-import { alignBorder } from '@/gph/shape/tool'
+import { alignBorder } from './tool'
 
 const zrender = require('zrender')
 import LinePath from './LinePath'
 import Config from '../Config'
-import { calculatePosition, calculateScalePosition, createPath, getDirection } from '@/gph/orth'
+import { calculatePosition, calculateScalePosition, createPath, getDirection } from '../orth'
+import { WorkbenchMode } from '@/gph/shape/Const'
 const LineConfig = Config.Line
 
 const circleOptions = {
@@ -76,7 +77,6 @@ class Line extends zrender.Group {
       this.isSelected = options.showHandle || false
       this.clickCallback = options.clickCallback
       this.onclick = (event) => {
-        console.log(this.from.name + '--' + this.to.name)
         options.clickCallback(event, this)
       }
       this._createLine()
@@ -167,10 +167,10 @@ class Line extends zrender.Group {
      */
     selected(isSelected) {
       for (let i = 0; i < this.pathPoints.length; i++) {
-        isSelected ? this.pathPoints[i].show() : this.pathPoints[i].hide()
+        isSelected && this.mode === WorkbenchMode.EDIT ? this.pathPoints[i].show() : this.pathPoints[i].hide()
       }
-      isSelected ? this.startPoint.show() : this.startPoint.hide()
-      isSelected ? this.endPoint.show() : this.endPoint.hide()
+      isSelected && this.mode === WorkbenchMode.EDIT ? this.startPoint.show() : this.startPoint.hide()
+      isSelected && this.mode === WorkbenchMode.EDIT ? this.endPoint.show() : this.endPoint.hide()
       this.isSelected = isSelected
       this.dirty()
     }
@@ -234,6 +234,14 @@ class Line extends zrender.Group {
       this.lineView.updatePath(path)
       this._removeLineHandler()
       this._createLineHandler()
+    }
+    /**
+     *
+     * @param {WorkbenchMode} mode
+     */
+    changeMode(mode) {
+      this.mode = mode
+      this.selected(this.isSelected)
     }
 
     /**

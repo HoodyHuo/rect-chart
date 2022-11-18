@@ -10,6 +10,7 @@
 
 <script>
 import Workbench from './workbench'
+import { WorkbenchMode } from '@/gph/shape/Const'
 
 const _extractData = (event) => {
   const items = event.dataTransfer.items
@@ -32,6 +33,11 @@ export default {
     lines: {
       type: Array,
       required: true
+    },
+    mode: {
+      type: Number,
+      required: false,
+      default: WorkbenchMode.VIEW
     }
   },
   data() {
@@ -39,12 +45,25 @@ export default {
       workbench: null
     }
   },
+  watch: {
+    mode(newV, oldV) {
+      this.workbench.changeMode(newV)
+    }
+  },
+  created() {
+    document.addEventListener('keydown', this.keydown)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.keydown)
+  },
   mounted() {
     this.workbench = new Workbench({
       el: this.$refs.container,
       nodes: this.nodes,
       lines: this.lines,
-      clickNode: this.onZrClick
+      mode: this.mode,
+      onNodeSelected: this.onNodeClick,
+      onLineSelected: this.onLineClick
     })
   },
   methods: {
@@ -68,10 +87,14 @@ export default {
     /**
      * 处理box点击，保留最后一个选择，并上报事件
      * @param event 原始Zrender事件
-     * @param node
+     * @param node 节点对象
+     * @param target 节点携带信息
      */
-    onZrClick(event, node) {
-      this.$emit('select', event, node)
+    onNodeClick(event, node, target) {
+      this.$emit('select-node', event, node, target)
+    },
+    onLineClick(event, line, lineData) {
+      this.$emit('select-line', event, line, lineData)
     },
     /**
      * 保存当前布置结构
@@ -82,6 +105,18 @@ export default {
     },
     clear() {
       this.workbench.clear()
+    },
+    keydown(event) {
+      switch (event.code) {
+        case 'Delete':
+          // eslint-disable-next-line no-case-declarations
+          const line = this.workbench.selectedLine
+          // eslint-disable-next-line no-case-declarations
+          const box = this.workbench.selectedBox
+          this.workbench.removeBox(box)
+          this.workbench.removeLine(line)
+          break
+      }
     }
   }
 

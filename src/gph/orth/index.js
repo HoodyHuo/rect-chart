@@ -1,8 +1,8 @@
-import { subV } from '@/gph/orth/util'
+import { subV } from './util'
 import { Direction } from './Constant'
 import { getPathFindingData } from './route'
-import { extendBox, inView, isOppositeDirection } from '@/gph/orth/layoutUtil'
-import { lineRect } from '@/gph/orth/geometry'
+import { extendBox, inView, isOppositeDirection } from './layoutUtil'
+import { lineRect } from './geometry'
 import Grid from './Grid'
 import find from './find'
 
@@ -21,7 +21,7 @@ import find from './find'
  * @param {number} box.height
  * @param {number} box.direction
  *
- * @return position
+ * @return {number[]} position
  */
 function getOrigin(box) {
   switch (box.direction) {

@@ -1,6 +1,7 @@
 import ViewBackgroundShape from './shape/ViewBackgroundShape'
 import config from './Config'
-import ConnectShape from '@/gph/shape/ConnectShape'
+import ConnectShape from './shape/ConnectShape'
+import { WorkbenchMode } from '@/gph/shape/Const'
 const zrender = require('zrender')
 const BoxFont = config.BoxFont
 
@@ -25,9 +26,11 @@ class NodeBox extends zrender.Group {
     fontView // 文字shape
     target // 附带信息
     name // 展示文字
-    connectShape
+    connectShape // 连线层
 
-    isSelected = false
+    isSelected = false // 当前是否是被选中状态
+
+    mode // 当前工作模式
     /**
      * 构造函数
      * @param {number} options.x X
@@ -38,6 +41,9 @@ class NodeBox extends zrender.Group {
      * @param {string} options.name 显示名称
      * @param {json} options.target 节点关联数据（附加数据）
      * @param {json} options.state 节点状态
+     *
+     * @param {number} options.mode 当前模式
+     *
      * @param {boolean} options.draggable 是否可以拖动
      * @param {function} options.selectChange 选中回调函数
      * @param {function} options.move workbench 监听节点移动回调
@@ -57,6 +63,7 @@ class NodeBox extends zrender.Group {
       // 属性赋值
       this.target = options.target
       this.name = options.name
+      this.mode = options.mode
       // 创建展示shape
       this.view = new ViewBackgroundShape({
         box: this,
@@ -68,7 +75,7 @@ class NodeBox extends zrender.Group {
         style: {
         },
         // group options
-        draggable: true
+        draggable: false
       })
       this.fontView = new zrender.Text({
         box: this,
@@ -111,6 +118,7 @@ class NodeBox extends zrender.Group {
       this.ondrag = (event) => {
         options.move.call(this, event, this)
       }
+      this.changeMode(this.mode)
     }
 
     /**
@@ -127,7 +135,25 @@ class NodeBox extends zrender.Group {
           fill: (isSelected ? BoxFont.colorSelected : BoxFont.color)
         }
       })
-      isSelected ? this.connectShape.show() : this.connectShape.hide()
+      // 仅仅编辑模式才展示且选中才展示连接框
+      isSelected && this.mode === WorkbenchMode.EDIT ? this.connectShape.show() : this.connectShape.hide()
+    }
+
+    /**
+   *
+   * @param {number} mode
+   */
+    changeMode(mode) {
+      this.mode = mode
+      if (mode === WorkbenchMode.VIEW) {
+        this.connectShape.hide()
+        this.draggable = false
+      } else if (mode === WorkbenchMode.EDIT) {
+        if (this.isSelected) {
+          this.connectShape.show()
+        }
+        this.draggable = true
+      }
     }
 
     /**

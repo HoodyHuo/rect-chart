@@ -1,9 +1,9 @@
-import { Direction } from '@/gph/orth/Constant'
+import { Direction } from '../orth/Constant'
 
 const zrender = require('zrender')
 import Config from '../Config'
-import { alignBorder } from '@/gph/shape/tool'
-import ViewBackgroundShape from '@/gph/shape/ViewBackgroundShape'
+import { alignBorder } from './tool'
+import ViewBackgroundShape from './ViewBackgroundShape'
 import { TSpan } from 'zrender'
 
 const ConnectBox = Config.ConnectBox
