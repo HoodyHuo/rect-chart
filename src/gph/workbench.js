@@ -73,6 +73,7 @@ class Workbench {
      * @param isFinished 是否直接创建完成
      */
     createNode(param, isFinished) {
+      if (this.mode !== WorkbenchMode.EDIT) return
       const options = {
         x: param.x || 0,
         y: param.y || 0,
