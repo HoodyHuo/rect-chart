@@ -10,7 +10,7 @@
  * @param {number} endBox.x
  * @param {number} endBox.y
  * @param {number} endBox.width
- * @param {number} endBox.height
+ * @param {number} endBox.heigh
  * @param {number} endBox.direction
  * @param {number} minDist
  */
@@ -94,8 +94,8 @@ export const getPathFindingData = (start, end, minDist) => {
 
   if (!isCovered) {
     allPoints.push(
-      ...(startInfo.boundaryBox ?? []),
-      ...(endInfo.boundaryBox ?? [])
+      ...(startInfo.boundaryBox || []),
+      ...(endInfo.boundaryBox || [])
     )
   }
 
