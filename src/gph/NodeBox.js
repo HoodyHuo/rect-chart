@@ -1,7 +1,7 @@
 import ViewBackgroundShape from './shape/ViewBackgroundShape'
 import config from './Config'
 import ConnectShape from './shape/ConnectShape'
-import { WorkbenchMode } from '@/gph/shape/Const'
+import { WorkbenchMode } from './shape/Const'
 const zrender = require('zrender')
 const BoxFont = config.BoxFont
 

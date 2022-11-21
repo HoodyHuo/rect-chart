@@ -10,7 +10,7 @@
 
 <script>
 import Workbench from './workbench'
-import { WorkbenchMode } from '@/gph/shape/Const'
+import { WorkbenchMode } from './shape/Const'
 
 const _extractData = (event) => {
   const items = event.dataTransfer.items

@@ -29,7 +29,7 @@
 
 <script>
 import ZrenderFlow from '../gph/zrender-flow'
-import { WorkbenchMode } from '@/gph/shape/Const'
+import { WorkbenchMode } from '../gph/shape/Const'
 export default {
   name: 'HelloWorld',
   components: { ZrenderFlow },

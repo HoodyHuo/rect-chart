@@ -139,6 +139,7 @@ export default {
     handle: {
       size: 5, // 移动线条 圆点大小
       color: '#17329a' // 颜色
-    }
+    },
+    ArrowSize: 8 // 箭头大小
   }
 }

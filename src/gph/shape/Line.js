@@ -4,7 +4,10 @@ const zrender = require('zrender')
 import LinePath from './LinePath'
 import Config from '../Config'
 import { calculatePosition, calculateScalePosition, createPath, getDirection } from '../orth'
-import { WorkbenchMode } from '@/gph/shape/Const'
+import { WorkbenchMode } from '../shape/Const'
+import Arrow from '../shape/Arrow'
+import { Direction } from '../orth/Constant'
+
 const LineConfig = Config.Line
 
 const circleOptions = {
@@ -49,6 +52,8 @@ class Line extends zrender.Group {
     startPoint = null
     // 终点连接头
     endPoint = null
+    // arrow
+    arrow
 
     /**
      * 构造函数
@@ -98,6 +103,20 @@ class Line extends zrender.Group {
         draggable: false
       })
       this.add(this.lineView)
+
+      this.arrow = new Arrow({
+        draggable: false,
+        style: {
+          stroke: LineConfig.color[this.state] || LineConfig.color['default'],
+          fill: LineConfig.color[this.state] || LineConfig.color['default']
+        },
+        shape: {
+          x: this.path[this.path.length - 1][0],
+          y: this.path[this.path.length - 1][1],
+          direction: Direction.getReverse(this.to ? this.to.direction || Direction.TOP : Direction.TOP)
+        }
+      })
+      this.add(this.arrow)
     }
 
     /**
@@ -179,7 +198,9 @@ class Line extends zrender.Group {
       this.state = state
       const color = LineConfig.color[state] || LineConfig.color['default']
       this.lineView.updateColor(color)
+      this.endPoint.updateColor(color)
     }
+
     /**
      * 移除线段调整按钮
      * @private
@@ -193,7 +214,7 @@ class Line extends zrender.Group {
 
     /**
      * 触发更新连线信息
-     * @param {Array[][]} path  线路路径
+     * @param {number[number[]]} path  线路路径
      * @param {NodeBox} startBox 起点节点对象
      * @param {Direction} startDirection 起始方向
      * @param {NodeBox} endBox  结束节点
@@ -226,18 +247,21 @@ class Line extends zrender.Group {
       this.startPoint.x = path[0][0]
       this.startPoint.y = path[0][1]
       this.startPoint.dirty()
-
       this.endPoint.x = path[path.length - 1][0]
       this.endPoint.y = path[path.length - 1][1]
       this.endPoint.dirty()
 
       this.lineView.updatePath(path)
+      this.arrow.updatePosition(
+        { x: path[path.length - 1][0], y: path[path.length - 1][1] },
+        Direction.getReverse(this.to.direction))
       this._removeLineHandler()
       this._createLineHandler()
     }
+
     /**
      *
-     * @param {WorkbenchMode} mode
+     * @param {WorkbenchMode:number} mode
      */
     changeMode(mode) {
       this.mode = mode
@@ -372,10 +396,13 @@ class Line extends zrender.Group {
       this.path[i][1] += dy
       this.path[i + 1][0] += dx
       this.path[i + 1][1] += dy
+      const path = this.path
 
       this._removeLineHandler()
       this._createLineHandler()
       this.lineView.updatePath(this.path)
+      this.arrow.updatePosition({ x: path[path.length - 1][0], y: path[path.length - 1][1] },
+        Direction.getReverse(this.to.direction))
     }
 }
 
