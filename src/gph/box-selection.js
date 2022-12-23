@@ -202,6 +202,9 @@ class BoxSelection {
    */
   algin(direction) {
     alignNodes(this.selectBox, direction)
+    for (let i = 0; i < this.selectBox.length; i++) {
+      this._workbench._redrawLineWhenBoxChange(this.selectBox[i])
+    }
   }
 
   /**
