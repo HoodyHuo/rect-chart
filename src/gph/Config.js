@@ -6,7 +6,7 @@ export default {
   BoxFont: {
     color: '#ffffff', // 节点文字颜色
     colorSelected: '#ffffff', // 被选中字体颜色
-    fontSize: 14 // 节点字体大小
+    fontSize: 20 // 节点字体大小
   },
   // 节点背景色配置
   NodeColor: {
@@ -24,7 +24,7 @@ export default {
       ]),
       border: '#3289ed'
     },
-    health: {
+    P0: {
       background: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0.5,
@@ -37,20 +37,21 @@ export default {
       ]),
       border: '#3289ed'
     },
-    error: {
+    P1: {
       background: new zrender.LinearGradient(0, 0, 0, 1, [
         {
-          offset: 0,
-          color: '#1b1940'
+          offset: 0.5,
+          color: '#062856'
         },
         {
-          offset: 0.7,
-          color: '#940b1d'
+          offset: 1,
+          color: '#043d82'
         }
       ]),
-      border: '#940b1d'
+      border: '#3289ed'
     },
-    warning: {
+
+    P2: {
       background: new zrender.LinearGradient(0, 0, 0, 1, [
         {
           offset: 0,
@@ -62,6 +63,32 @@ export default {
         }
       ]),
       border: '#ffed58'
+    },
+    P3: {
+      background: new zrender.LinearGradient(0, 0, 0, 1, [
+        {
+          offset: 0,
+          color: '#1b1940'
+        },
+        {
+          offset: 0.7,
+          color: '#93115b'
+        }
+      ]),
+      border: '#940b5d'
+    },
+    P4: {
+      background: new zrender.LinearGradient(0, 0, 0, 1, [
+        {
+          offset: 0,
+          color: '#1b1940'
+        },
+        {
+          offset: 0.7,
+          color: '#940b1d'
+        }
+      ]),
+      border: '#940b1d'
     },
     offline: {
       background: '#3f4c67',
@@ -77,20 +104,20 @@ export default {
   },
   // 尺寸调整盒子
   EditBox: {
-    circleSize: 3, // 拖拽点大小
+    circleSize: 5, // 拖拽点大小
     circleFill: '#e5e5e5', // 连接点填充颜色
     circleStroke: '#aaaaaa' //
   },
   // 连线盒子
   ConnectBox: {
-    circleSize: 3, // 连接点大小
+    circleSize: 5, // 连接点大小
     circleFill: '#e5e5e5', // 连接点填充颜色
     circleStroke: '#54c7fd' //
   },
   // 线段
   Line: {
     lineWidth: 3, // 线条粗细
-    lineSpeed: 50,
+    lineSpeed: 600,
     // 线条颜色
     color: {
       default: new zrender.LinearGradient(0, 0, 0, 1, [
@@ -140,6 +167,13 @@ export default {
       size: 5, // 移动线条 圆点大小
       color: '#17329a' // 颜色
     },
-    ArrowSize: 8 // 箭头大小
+    ArrowSize: 10 // 箭头大小
+  },
+  MenuConfig: {
+    WIDTH: 150,
+    HEIGHT: 30,
+    BG_COLOR: '#FFFFFF',
+    FONT_SIZE: 18,
+    FONT_COLOR: '#000000'
   }
 }

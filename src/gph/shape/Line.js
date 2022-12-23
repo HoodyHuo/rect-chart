@@ -4,14 +4,14 @@ const zrender = require('zrender')
 import LinePath from './LinePath'
 import Config from '../Config'
 import { calculatePosition, calculateScalePosition, createPath, getDirection } from '../orth'
-import { WorkbenchMode } from '../shape/Const'
+import { WorkbenchMode, ZLevel } from '../shape/Const'
 import Arrow from '../shape/Arrow'
 import { Direction } from '../orth/Constant'
 
 const LineConfig = Config.Line
 
 const circleOptions = {
-  zlevel: 10,
+  zlevel: ZLevel.LINE,
   shape: {
     r: LineConfig.handle.size
   },
@@ -28,12 +28,15 @@ const circleOptions = {
 class Line extends zrender.Group {
     Type = 'Line'
 
+    target
+
     /** 线路数据 number[][] */
     path
 
     /** 起点、终点信息 from、to
      *
-     *     name: string, //节点 名称
+     *     zrenderId:number
+     *     target: {}, //节点target 名称
      *     scaleX: x, // 在节点内的相对位置
      *     scaleY: y,
      *     direction: startDirection //起点朝向
@@ -55,25 +58,31 @@ class Line extends zrender.Group {
     // arrow
     arrow
 
+    mode // 当前模式
+
     /**
      * 构造函数
      * @constructor
      * @param {number[number[]]} options.path 线段路径
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.from
      * @param {{name:string,scaleX:number,scaleY:number,direction:Direction}} options.to
+     * @param {{}} options.target
      * @param {Workbench} options.workbench
      * @param {string} options.state
      * @param {boolean} options.showHandle
      * @param {Workbench} options.clickCallback
+     * @param {string} options.mode
      */
     constructor(options) {
       super({
-        zlevel: 30,
+        zlevel: ZLevel.LINE,
         x: 0,
         y: 0,
         height: 0,
         width: 0
       })
+      this.mode = options.mode
+      this.target = options.target
       this.from = options.from
       this.to = options.to
       this.path = options.path
@@ -102,6 +111,22 @@ class Line extends zrender.Group {
         },
         draggable: false
       })
+      // 设置动态调整虚线间隔，达到流动的感觉0
+      /** setInterval(() => {
+        if (this.style.lineDashOffset === 1) {
+          this.style.lineDashOffset = 16
+        } else {
+          this.style.lineDashOffset--
+        }
+        this.dirty()
+      }, LineConfig.lineSpeed) */
+      this.lineView.animate('style', true)
+        .when(0, {
+          lineDashOffset: 16
+        })
+        .when(LineConfig.lineSpeed, {
+          lineDashOffset: 1
+        }).start()
       this.add(this.lineView)
 
       this.arrow = new Arrow({
@@ -226,7 +251,8 @@ class Line extends zrender.Group {
       if (startBox) {
         const { x, y } = calculateScalePosition(startBox, { x: path[0][0], y: path[0][1] })
         this.from = {
-          name: startBox.name,
+          zrenderId: startBox.id,
+          target: startBox.target,
           scaleX: x,
           scaleY: y,
           direction: startDirection
@@ -237,7 +263,8 @@ class Line extends zrender.Group {
         const { x, y } = calculateScalePosition(endBox,
           { x: path[path.length - 1][0], y: path[path.length - 1][1] })
         this.to = {
-          name: endBox.name,
+          zrenderId: endBox.id,
+          target: endBox.target,
           scaleX: x,
           scaleY: y,
           direction: endDirection
@@ -298,8 +325,8 @@ class Line extends zrender.Group {
           : getDirection(this.path[0], [position.x, position.y])
       }
 
-      const startBox = isStart ? overBox : this.workbench.getBoxByName(this.from.name)
-      const endBox = !isStart ? overBox : this.workbench.getBoxByName(this.to.name)
+      const startBox = isStart ? overBox : this.workbench.getBoxByZrenderId(this.from.target.id)
+      const endBox = !isStart ? overBox : this.workbench.getBoxByZrenderId(this.to.target.id)
 
       const path = createPath(
         {
@@ -350,36 +377,6 @@ class Line extends zrender.Group {
       )
       this.updatePath(path, startBox, this.from.direction, endBox, this.to.direction)
     }
-
-    /**
-     * @deprecated
-     * @param index
-     * @param position
-     * @param box
-     */
-    alginBorder(index, position, box) {
-      if (box === null) {
-        return
-      }
-      const { pos } = alignBorder(position, box)
-      if (index === 0) {
-        this.from = box.name
-        this.startPoint.x = pos.x
-        this.startPoint.y = pos.y
-        this.startPoint.dirty()
-      }
-
-      if (index === this.path.length - 1) {
-        this.to = box.name
-        this.endPoint.x = pos.x
-        this.endPoint.y = pos.y
-        this.endPoint.dirty()
-      }
-      this.path[index].y = pos.y
-      this.path[index].x = pos.x
-      this.lineView.dirty()
-    }
-
     /**
      * 调整线材的链接中间
      * @param event zrender event

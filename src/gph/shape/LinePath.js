@@ -1,3 +1,5 @@
+import { ZLevel } from './Const'
+
 const zrender = require('zrender')
 import BoxConfig from '../Config'
 const LineConfig = BoxConfig.Line
@@ -10,7 +12,7 @@ class LinePath extends zrender.Path {
 
   constructor(options) {
     options.draggable = false
-    options.zlevel = 10
+    options.zlevel = ZLevel.LINE
     options.style.fill = null
     options.style.lineWidth = LineConfig.lineWidth
     options.style.strokeNoScale = true
@@ -18,14 +20,15 @@ class LinePath extends zrender.Path {
     super(options)
     this.data = options.data
 
-    setInterval(() => {
-      if (this.style.lineDashOffset === 1) {
-        this.style.lineDashOffset = 16
-      } else {
-        this.style.lineDashOffset--
-      }
-      this.dirty()
-    }, LineConfig.lineSpeed)
+    // // 设置动态调整虚线间隔，达到流动的感觉0
+    // setInterval(() => {
+    //   if (this.style.lineDashOffset === 1) {
+    //     this.style.lineDashOffset = 16
+    //   } else {
+    //     this.style.lineDashOffset--
+    //   }
+    //   this.dirty()
+    // }, LineConfig.lineSpeed)
   }
 
   buildPath(ctx, shapeCfg, inBatch) {

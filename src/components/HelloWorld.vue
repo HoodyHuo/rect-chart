@@ -40,24 +40,22 @@ export default {
   data() {
     return {
       data: {
-        'lines': [{ 'from': { 'name': 'zrender2', 'scaleX': 0.4537037037037037, 'scaleY': 0, 'direction': 'top' }, 'to': { 'name': 'zrender1', 'scaleX': 0.475, 'scaleY': 1, 'direction': 'bottom' }, 'path': [[41, 322], [41, 108], [301, 108], [301, 348], [176, 348], [176, 328]] }, { 'from': { 'name': 'zrender1', 'scaleX': 1, 'scaleY': 0.5, 'direction': 'right' }, 'to': { 'name': 'zrender3', 'scaleX': 0, 'scaleY': 0.5299999999999999, 'direction': 'left' }, 'path': [[281, 228], [317, 228], [317, 78.1], [352, 78.1]] }, { 'from': { 'name': 'zrender3', 'scaleX': 1, 'scaleY': 0.5, 'direction': 'right' }, 'to': { 'name': 'zrender4', 'scaleX': 0.529999999999998, 'scaleY': 0, 'direction': 'top' }, 'path': [[493, 76], [513, 76], [513, 173], [503.95999999999935, 173], [503.95999999999935, 193]] }, { 'from': { 'name': 'zrender4', 'scaleX': 0.5, 'scaleY': 1, 'direction': 'bottom' }, 'to': { 'name': 'zrender5', 'scaleX': 1, 'scaleY': 0.45, 'direction': 'right' }, 'path': [[494, 326], [494, 346], [627, 346], [627, 429], [607, 429]] }, { 'from': { 'name': 'zrender5', 'scaleX': 0, 'scaleY': 0.5, 'direction': 'left' }, 'to': { 'name': 'zrender2', 'scaleX': 0.38500000000000145, 'scaleY': 1, 'direction': 'bottom' }, 'path': [[407, 434], [33.580000000000155, 434], [33.580000000000155, 388]] }],
+        'lines': [
+          { 'target': { 'id': 55 },
+            'from': { 'zrenderId': 2348, 'target': { 'name': 'zrender5', 'age': 20 }, 'scaleX': 0.5, 'scaleY': 0, 'direction': 'top' },
+            'to': { 'zrenderId': 2357, 'target': { 'name': 'zrender4', 'age': 20 }, 'scaleX': 0.4879518072289157, 'scaleY': 1, 'direction': 'bottom' },
+            'path': [[191, 131], [191, 111], [71, 111], [71, 464], [179.6987951807229, 464], [179.6987951807229, 444]] }
+        ],
         'nodes': [
-          { 'x': 81, 'y': 128,
-            'width': 200, 'height': 200,
-            'name': 'zrender1',
-            state: 'error',
-            'target': { 'name': 'zrender1', 'age': 50 }},
-          { 'x': -8, 'y': 322, 'width': 108, 'height': 66, 'name': 'zrender2',
-            state: 'offline',
-            'target': { 'name': 'zrender2', 'age': 20 }},
-          { 'x': 352, 'y': 41, 'width': 141, 'height': 70, 'name': 'zrender3',
-            state: 'warning',
-            'target': { 'name': 'zrender3', 'age': 20 }},
-          { 'x': 407, 'y': 384, 'width': 200, 'height': 100, 'name': 'zrender5',
-            'target': { 'name': 'zrender5', 'age': 20 }},
-          { 'x': 328, 'y': 193, 'width': 332, 'height': 133, 'name': 'zrender4',
-            'target': { 'name': 'zrender4', 'age': 20 }}
-        ]
+          { id: 2348, 'x': 81, 'y': 128, 'width': 200, 'height': 200, 'name': 'zrender1', 'target': { 'name': 'zrender1', 'age': 50 },
+            menus: [
+              { icon: null, text: 'anniu1', callback: (e1, e2) => { console.log('2348-anniu1') } },
+              { icon: null, text: 'anniu2', callback: (e1, e2) => { console.log('2348-anniu2') } }
+            ] },
+          { id: 2357, 'x': 116, 'y': 387, 'width': 108, 'height': 66, 'name': 'zrender2', 'target': { 'name': 'zrender2', 'age': 20 }},
+          { 'x': 352, 'y': 41, 'width': 141, 'height': 70, 'name': 'zrender3', 'target': { 'name': 'zrender3', 'age': 20 }},
+          { 'x': 366, 'y': 416, 'width': 200, 'height': 100, 'name': 'zrender5', 'target': { 'name': 'zrender5', 'age': 20 }},
+          { 'x': 344, 'y': 188, 'width': 332, 'height': 133, 'name': 'zrender4', 'target': { 'name': 'zrender4', 'age': 20 }}]
       },
       count: 1,
       mode: WorkbenchMode.VIEW

@@ -1,7 +1,11 @@
 const zrender = require('zrender')
 import config from '../Config'
 const BoxBorder = config.BoxBorder
+const NodeColor = config.NodeColor
 
+const _getColor = (state) => {
+  return NodeColor[state] || NodeColor['default']
+}
 /**
  * 节点 背景图层
  */
@@ -11,10 +15,11 @@ class ViewBackgroundShape extends zrender.Path {
 
     constructor(options) {
       options.draggable = false
-      options.style.fill = config.NodeColor[(options.state || 'default')].background
+      const colorConfig = _getColor(options.state)
+      options.style.fill = colorConfig.background
       options.style.lineWidth = BoxBorder.lineWidth
       options.style.strokeNoScale = true
-      options.style.stroke = config.NodeColor[(options.state || 'default')].border
+      options.style.stroke = colorConfig.border
 
       super(options)
       this.state = options.state || 'default'
@@ -30,12 +35,9 @@ class ViewBackgroundShape extends zrender.Path {
       ctx.lineTo(this.x, this.y)
     }
 
-    getColor() {
-      return config.NodeColor[this.state].background || config.NodeColor['default']
-    }
     updateState(state) {
       this.state = state
-      const color = this.getColor()
+      const color = _getColor(state)
       this.options.style.fill = color.background
       this.options.style.stroke = color.border
       this.dirty()

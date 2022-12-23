@@ -42,10 +42,18 @@ export default {
   },
   data() {
     return {
-      workbench: null
+      workbench: null,
+      oldWidth: null,
+      oldHeight: null
     }
   },
   watch: {
+    // nodes(newV, oldV) {
+    //   this.reload()
+    // },
+    // lines(newv, oldV) {
+    //   this.reload()
+    // },
     mode(newV, oldV) {
       this.workbench.changeMode(newV)
     }
@@ -67,6 +75,9 @@ export default {
     })
   },
   methods: {
+    reload(nodes, lines, isScale) {
+      this.workbench.reload(nodes, lines, isScale)
+    },
     createNode(event) {
       // eslint-disable-next-line no-unused-vars
       const data = _extractData(event)
@@ -74,7 +85,7 @@ export default {
         console.log('拖拽元素不符合要求')
         return
       }
-      this.workbench.createNode({ x: event.offsetX, y: event.offsetY }, false)
+      this.workbench.createNode({ x: event.offsetX, y: event.offsetY, name: data.name, target: data }, false)
     },
     nodeMove(event) {
       this.workbench.tempNodeMoving(event,
@@ -102,6 +113,9 @@ export default {
      */
     save() {
       return this.workbench.save()
+    },
+    getImg() {
+      return this.workbench.getImgBase64(50)
     },
     clear() {
       this.workbench.clear()

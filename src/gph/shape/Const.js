@@ -8,3 +8,10 @@ export const WorkbenchMode = {
   // 浏览模式
   VIEW: 0
 }
+
+export const ZLevel = {
+  NODE: 10,
+  LINE: 20,
+  SELECT_VIEW: 30,
+  CONTEXT_MENU: 40
+}

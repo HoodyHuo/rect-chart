@@ -1,12 +1,13 @@
+import { ZLevel } from '../shape/Const'
+
 const zrender = require('zrender')
 // eslint-disable-next-line no-unused-vars
-import Nodebox from '../NodeBox'
 import Config from '../Config'
 const EditBox = Config.EditBox
 
 /** 尺寸调整控件统一参数 */
 const circleOptions = {
-  zlevel: 10,
+  zlevel: ZLevel.NODE,
   shape: {
     r: EditBox.circleSize
   },

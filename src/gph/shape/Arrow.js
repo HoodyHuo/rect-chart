@@ -1,5 +1,6 @@
 import { Direction } from '../orth/Constant'
 import Config from '../Config'
+import { ZLevel } from './Const'
 
 const LineConfig = Config.Line
 
@@ -28,7 +29,7 @@ class Arrow extends zrender.Path {
      */
     constructor(opts) {
       opts.shape.size = opts.shape.size || LineConfig.ArrowSize
-      opts.zlevel = 10
+      opts.zlevel = ZLevel.LINE
       opts.style.lineWidth = 1
       super(opts)
       this.shape = opts.shape

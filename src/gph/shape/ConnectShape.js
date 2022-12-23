@@ -3,15 +3,15 @@ import { Direction } from '../orth/Constant'
 const zrender = require('zrender')
 import Config from '../Config'
 import { alignBorder } from './tool'
-import ViewBackgroundShape from './ViewBackgroundShape'
-import { TSpan } from 'zrender'
+import { ZLevel } from './Const'
+import { findParent } from '../util'
 
 const ConnectBox = Config.ConnectBox
 
 /** 连线起点通用zrender配置 */
 const circleOptions = {
   cursor: 'crosshair',
-  zlevel: 10,
+  zlevel: ZLevel.NODE,
   shape: {
     r: ConnectBox.circleSize
   },
@@ -180,15 +180,7 @@ class ConnectShape extends zrender.Group {
       let position = { x: event.offsetX, y: event.offsetY }
       /** 定位当前落在那个节点实例上 */
       if (event.topTarget) {
-        if (event.topTarget instanceof ViewBackgroundShape) {
-          endBox = event.topTarget.parent
-        }
-        if (event.topTarget instanceof TSpan) {
-          endBox = event.topTarget.parent.parent
-        }
-        if (event.topTarget instanceof zrender.Circle && event.topTarget.parent && event.topTarget.parent instanceof ConnectShape) {
-          endBox = event.topTarget.parent.parent
-        }
+        endBox = findParent(event.topTarget)
         if (endBox !== null && endBox !== startBox) {
           const endAl = alignBorder({ x: event.offsetX, y: event.offsetY }, endBox)
           endDirection = endAl.direction
@@ -220,6 +212,8 @@ class ConnectShape extends zrender.Group {
     resize(width, height) {
       this.height = height
       this.width = width
+      this.x = 0
+      this.y = 0
 
       this.pointers[Direction.TOP].x = this.width / 2
       this.pointers[Direction.TOP].y = 0
