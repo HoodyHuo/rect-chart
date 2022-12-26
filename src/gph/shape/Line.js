@@ -335,14 +335,14 @@ class Line extends zrender.Group {
           width: startBox.width,
           height: startBox.height,
           direction: isStart ? boxDirection : this.from.direction,
-          anchor: isStart ? position : null
+          anchor: isStart ? position : calculatePosition(startBox, this.from)
         }, {
           x: endBox.x,
           y: endBox.y,
           width: endBox.width,
           height: endBox.height,
           direction: this.to.direction,
-          anchor: !isStart ? position : null
+          anchor: !isStart ? position : calculatePosition(endBox, this.to)
         }, 20
       )
       this.updatePath(path,
@@ -356,8 +356,11 @@ class Line extends zrender.Group {
      * @param {NodeBox} endBox
      */
     updateBoxMove(startBox, endBox) {
+      // 起点落在盒子的位置
       const startPos = calculatePosition(startBox, this.from)
+      // 终点落在盒子的位置
       const endPos = calculatePosition(endBox, this.to)
+      // 重新计算量路径
       const path = createPath(
         {
           x: startBox.x,

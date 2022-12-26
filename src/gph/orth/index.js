@@ -109,13 +109,13 @@ function _moveAnchor(path, startAnchor, endAnchor) {
 
 /**
  * 根据2个盒子，计算连接线
- * @param  startParam
- * @param {number}  startParam.x
- * @param {number}  startParam.y
- * @param {number}  startParam.width
- * @param {number}  startParam.height
- * @param {number}  startParam.direction
- * @param {{x:number,y:number}}  startParam.anchor
+ * @param  startParam 起点参数
+ * @param {number}  startParam.x 起点盒子的左上角x
+ * @param {number}  startParam.y 起点盒子的左上角Y
+ * @param {number}  startParam.width 盒子宽度
+ * @param {number}  startParam.height 盒子高度
+ * @param {number}  startParam.direction 连线出来的方向
+ * @param {{x:number,y:number}}  startParam.anchor 起点盒子上连线的那一点坐标
  * @param endParam
  * @param {number} endParam.x
  * @param {number} endParam.y
