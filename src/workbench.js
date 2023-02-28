@@ -255,7 +255,7 @@ class Workbench {
    */
   _initScale() {
     // 初始化缩放辅助对象
-    this._scaleTool = new ScaleHelper(this._zr, this._elOri, 1)
+    this._scaleTool = new ScaleHelper(this._zr,this, this._elOri, 1)
     // 根据内容进行缩放
     this._scaleTool.reScaleByContent(this._boxList, this._lineList)
   }

@@ -1,17 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "es2015",
+        "target": "es6",
+        "module": "ES6",
         "declaration": true,
         "outDir": "./lib",
         "allowJs":true,
-        "sourceMap":true,
+        "moduleResolution":"node",
+        // "sourceMap":true,
         "strict": true,
         "lib": [
             "es6",
             "dom"
         ]
     },
+   
     "compileOnSave":true,
     "include": [
         "src/**/*"
