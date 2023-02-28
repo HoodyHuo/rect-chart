@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "es6",
+        "target": "es5",
+        "module": "es2015",
         "declaration": true,
-        "outDir": "./build",
+        "outDir": "./lib",
         "allowJs":true,
+        "sourceMap":true,
         "strict": true,
         "lib": [
             "es6",
