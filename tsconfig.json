@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "declaration": true,
+        "outDir": "./build",
+        "allowJs":true,
+        "strict": true,
+        "lib": [
+            "es6",
+            "dom"
+        ]
+    },
+    "compileOnSave":true,
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/__tests__/*"
+    ]
+}
