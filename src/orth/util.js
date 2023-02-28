@@ -1,9 +1,9 @@
 /**
- *
+ *sdf 
  * @param {number[]} v1
  * @param {number[]} v2
  */
-export function subV(v1, v2) {
+export const subV = (v1, v2) => {
   return v1.map((item, index) => item - v2[index])
 }
 
@@ -14,9 +14,9 @@ export function subV(v1, v2) {
  */
 export const inBox = (position, box) => {
   return position[0] >= box.x &&
-      position[0] <= box.x + box.width &&
-      position[1] >= box.y &&
-      position[1] <= box.y + box.height
+    position[0] <= box.x + box.width &&
+    position[1] >= box.y &&
+    position[1] <= box.y + box.height
 }
 
 /**

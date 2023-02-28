@@ -117,7 +117,10 @@ export function fixSize(el) {
  * @returns {*}
  */
 export const findParent = (shape) => {
-  if (typeof shape.parent !== 'undefined' && shape.parent !== null) {
+  if (typeof shape.parent !== 'undefined' 
+  && shape.parent !== null 
+  && shape.parent.name !== "scale" // 排除最顶层的缩放group
+  ) {
     return findParent(shape.parent)
   } else {
     return shape
@@ -157,3 +160,28 @@ export function alignNodes(nodes, direction) {
   }
 }
 
+
+export function getBoundingRect(boxList) {
+if(boxList.length<1){
+  return {
+    x:0,y:0,width:0,height:0
+  }
+}
+
+  let x1 = Number.MAX_VALUE
+  let x2 = Number.MIN_VALUE
+
+  let y1 = Number.MAX_VALUE
+  let y2 = Number.MIN_VALUE
+
+  for (let box of boxList) {
+    x1 = box.x < x1 ? box.x : x1
+    x2 = box.x + box.width > x2 ? box.x + box.width : x2
+
+    y1 = box.y < y1 ? box.y : y1
+    y2 = box.y + box.height > y2 ? box.y + box.height : y2
+  }
+
+  return { x: x1, y: y1, width: x2 - x1, height: y2 - y1 }
+
+}

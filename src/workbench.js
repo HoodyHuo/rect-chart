@@ -80,11 +80,11 @@ class Workbench {
     this._onLineSelected = options.onLineSelected
 
     this._bindingEvent()
-    this._initScale()
+    this._scaleTool = this._initScale()
     this._initResizeBox()
     this._createNodes()
     this._createLines()
-    this.boxSelection = new BoxSelection(this._zr, this, this._onRectSelected)
+    this.boxSelection = new BoxSelection(this._zr, this,this._scaleTool, this._onRectSelected)
     this._menuShape = new MenuHandler(this._zr)
   }
 
@@ -121,7 +121,10 @@ class Workbench {
     options.x = options.x + options.width / 2
     options.y = options.y + options.height / 2
     const node = new NodeBox(options)
-    this._zr.add(node)
+    this._scaleTool.add(node) 
+
+    this._scaleTool.group.add(node)
+
     this._tempNode = node
     if (isFinished) {
       this.createNodeEnd(true)
@@ -136,8 +139,11 @@ class Workbench {
    */
   tempNodeMoving(event, position) {
     if (this._tempNode && this._tempNode instanceof NodeBox) {
+      //计算窗口位置移到缩放group之后的局部坐标
+      const xy =  this._scaleTool.transformCoordToLocal(position.x,position.y)
+
       this._tempNode.resize(
-        position.x - this._tempNode.width / 2, position.y - this._tempNode.height / 2,
+        xy[0] - this._tempNode.width / 2, xy[1] - this._tempNode.height / 2,
         this._tempNode.width, this._tempNode.height)
     }
   }
@@ -152,10 +158,11 @@ class Workbench {
     if (isKeep) {
       this._boxList.push(this._tempNode)
     } else {
-      this._zr.remove(this._tempNode)
+      this._scaleTool.remove(this._tempNode)
     }
     this._tempNode = null
   }
+
 
   /**
    * 保存函数，提取所有节点和线段记录，用于下次加载
@@ -212,14 +219,14 @@ class Workbench {
   clear() {
     // 清除线条
     for (let i = 0; i < this._lineList.length; i++) {
-      this._zr.remove(this._lineList[i])
+      this._scaleTool.remove(this._lineList[i])
     }
     if (this._tempLine) {
-      this._zr.remove(this._tempLine)
+      this._scaleTool.remove(this._tempLine)
     }
     // 清除节点
     for (let i = 0; i < this._boxList.length; i++) {
-      this._zr.remove(this._boxList[i])
+      this._scaleTool.remove(this._boxList[i])
     }
     // 清除缓存
     this._boxList = []
@@ -255,9 +262,10 @@ class Workbench {
    */
   _initScale() {
     // 初始化缩放辅助对象
-    this._scaleTool = new ScaleHelper(this._zr,this, this._elOri, 1)
+    const scaleTool = new ScaleHelper(this._zr,this, this._elOri, 1)
     // 根据内容进行缩放
-    this._scaleTool.reScaleByContent(this._boxList, this._lineList)
+    scaleTool.reScaleByContent(this._boxList, this._lineList)
+    return scaleTool
   }
 
   /**
@@ -278,7 +286,7 @@ class Workbench {
       Object.assign(opt2, nodeData)
       opt2.z = i + 1
       const nodeBox = new NodeBox(opt2)
-      this._zr.add(nodeBox)
+      this._scaleTool.add(nodeBox)
       this._boxList.push(nodeBox)
     }
   }
@@ -343,7 +351,8 @@ class Workbench {
       showHandle: true,
       clickCallback: this._onLineClick.bind(this)
     })
-    this._zr.add(line)
+ 
+    this._scaleTool.add(line)
     this._tempLine = line
   }
 
@@ -391,7 +400,7 @@ class Workbench {
    */
   _onEndLine(startBox, startDirection, position, endBox, endDirection) {
     if (this._tempLine.to == null) {
-      this._zr.remove(this._tempLine)
+      this._scaleTool.remove(this._tempLine)
     } else {
       this._lineList.push(this._tempLine)
     }
@@ -405,7 +414,7 @@ class Workbench {
    * @private
    */
   _onNodeClick(event, box) {
-    this.boxSelection.clearGroup()
+    this.boxSelection.reset()
     /** 切换选择 */
     for (let i = 0; i < this._boxList.length; i++) {
       this._boxList[i].selected(false)
@@ -431,7 +440,7 @@ class Workbench {
    * @private
    */
   _onLineClick(event, line) {
-    this.boxSelection.clearGroup()
+    this.boxSelection.reset()
     // 设置所有线为未选中状态
     for (let i = 0; i < this._lineList.length; i++) {
       this._lineList[i].selected(false)
@@ -470,8 +479,8 @@ class Workbench {
     const resizeBox = new EditShape({
       onSizeChange: this._onSizeChange.bind(this)
     })
-    resizeBox.hide()
-    this._zr.add(resizeBox)
+    resizeBox.hide() 
+    this._scaleTool.add(resizeBox)
     this._resizeBox = resizeBox
   }
 
@@ -504,7 +513,6 @@ class Workbench {
   /**
    * 重绘盒子关联线段
    * @param box
-   * @private
    */
   _redrawLineWhenBoxChange(box) {
     for (let i = 0; i < this._lineList.length; i++) {
@@ -538,12 +546,12 @@ class Workbench {
     if (!box) return
     // 从列表和zrender 移除节点
     this._boxList = this._boxList.filter((value) => value !== box)
-    this._zr.remove(box)
+    this._scaleTool.remove(box)
     this._resizeBox.hide()
     // 删除节点相关连线
     this._lineList = this._lineList.filter((line) => {
       if (line.from.zrenderId === box.id || line.to.zrenderId === box.id) {
-        this._zr.remove(line)
+        this._scaleTool.remove(line)
         return false
       } else {
         return true
@@ -559,7 +567,7 @@ class Workbench {
     if (this.mode !== WorkbenchMode.EDIT) return
     if (!line) return
     this._lineList = this._lineList.filter((value) => value !== line)
-    this._zr.remove(line)
+    this._scaleTool.remove(line)
   }
 
   /**
@@ -621,7 +629,7 @@ class Workbench {
         clickCallback: this._onLineClick.bind(this)
       })
       this._lineList.push(line)
-      this._zr.add(line)
+      this._scaleTool.add(line) 
     }
   }
 }

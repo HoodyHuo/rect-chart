@@ -1,5 +1,5 @@
 import { calcContentRect } from './util'
-import { Group, ZRenderType } from 'zrender'
+import { Group, ZRenderType,Element } from 'zrender'
 import Line from './shape/Line'
 import NodeBox from './shape/NodeBox'
 import Workbench from './workbench'
@@ -15,7 +15,7 @@ class ScaleHelper {
   private _zr: ZRenderType
   private _elOri: HTMLElement// 挂载的原始dom元素
   private _workbench: Workbench
-  private group: Group
+  group: Group
 
 
 
@@ -25,7 +25,7 @@ class ScaleHelper {
     this._zr = zr
     this._workbench = workbench
 
-    this.group = new Group()
+    this.group = new Group({name:"scale"})
     this._zr.add(this.group)
     this._bindCtrl()
   }
@@ -56,7 +56,7 @@ class ScaleHelper {
       if (!event?.ctrlKey) {
         return
       }
-      this.loadNodesLines()
+      // this.loadNodesLines()
       this._elOri.addEventListener("mousemove", movePanel)
     })
 
@@ -76,7 +76,7 @@ class ScaleHelper {
     if (scale < 0.2 || scale > 2) {
       return false
     }
-    this.loadNodesLines()
+    // this.loadNodesLines()
     const org = [event?.event?.clientX ?? 0, event?.event?.clientY ?? 0]
     this.group.setOrigin(org)
     this.group.setScale([scale, scale])
@@ -89,7 +89,7 @@ class ScaleHelper {
    */
   private loadNodesLines() {
     this.group.removeAll()
-    
+
     for (let nodebox of this._workbench._boxList) {
       this.group.add(nodebox)
     }
@@ -109,6 +109,23 @@ class ScaleHelper {
       this._elOri.offsetHeight / (maxY + 100)
     )
     this.scaleZrender(scale, null)
+  }
+/**
+ * 转换全局坐标到经过group处理后的坐标
+ * @param x 全局X
+ * @param y 全局Y
+ * @returns 局部Xy
+ */
+  transformCoordToLocal(x: number, y: number): number[] {
+    return this.group.transformCoordToLocal(x, y)
+  }
+
+  add(shape:Element){
+    this.group.add(shape)
+  }
+
+  remove(shape:Element){
+    this.group.remove(shape)
   }
 }
 export default ScaleHelper

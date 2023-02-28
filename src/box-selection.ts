@@ -1,38 +1,46 @@
 import { WorkbenchMode, ZLevel } from './shape/Const'
 import { Direction } from './orth/Constant'
-const Zrender = require('zrender')
-import { alignNodes, boxContain } from './util'
+import { Group, ZRenderType, Rect } from 'zrender'
+import { alignNodes, boxContain,getBoundingRect } from './util'
+import Workbench from './workbench'
+import NodeBox from './shape/NodeBox'
+import ScaleHelper from './scale-helper'
 
 /**
  * 框选处理辅助对象，
  * 帮助工作台完成框选及框选移动相关事件
  */
 class BoxSelection {
-  _zr // zrender 实例
+  _zr: ZRenderType// zrender 实例
 
-  _workbench // 工作台实例
+  _workbench: Workbench// 工作台实例
+  _scaleTool: ScaleHelper
 
-  _selectRect // 框选图形（展示用）
-  _selectedGroup // 框选到的元素统一加入此group
-  _tempMoving = [0, 0] // 用于临时记录拖动量，操作完毕后清除
+  _selectRect: Rect // 框选图形（展示用）
+  _selectedGroup: Group// 框选到的元素统一加入此group
+  _tempMoving: number[] = [0, 0] // 用于临时记录拖动量，操作完毕后清除
 
-  _selectDoneCallback // 框选完毕回调
+  selectedBoxList: NodeBox[] = []
+
+  _selectDoneCallback: (arg1: NodeBox[]) => void// 框选完毕回调
 
   /**
    * 构造函数
-   *   @param zr zrender实例
-   *   @param {Workbench} wb
-   *   @param {function(selectedList: NodeBox[])} onSelected 框选完毕回调
+   * @param zr 实例
+   * @param wb 工作台
+   * @param scaleTool 缩放器
+   * @param onSelected 选择判定后的回调事件
    */
-  constructor(zr, wb, onSelected) {
+  constructor(zr: ZRenderType, wb: Workbench, scaleTool: ScaleHelper, onSelected: (arg1: NodeBox[]) => void) {
     this._zr = zr
     this._workbench = wb
+    this._scaleTool = scaleTool
     this._selectDoneCallback = onSelected
     // 创建框选范围展示shape
     this._selectRect = this._makeSelectRect()
-    this._zr.add(this._selectRect)
+    this._scaleTool.add(this._selectRect) 
 
-    this._selectedGroup = new Zrender.Group({
+    this._selectedGroup = new Group({
       draggable: false
     })
     this._bindingMouseEvent()
@@ -48,28 +56,30 @@ class BoxSelection {
    * @param p.width 宽
    * @param p.height 高
    * @private
-   */
+   * 
+   *///@ts-ignore
   _handleSelectRect({ x, y, width, height }) {
-    this.selectBox = []
+    this.selectedBoxList = []
     for (let i = 0; i < this._workbench._boxList.length; i++) {
       if (boxContain({ x, y, width, height }, this._workbench._boxList[i])) {
-        this.selectBox.push(this._workbench._boxList[i])
-        this._selectedGroup.add(this._workbench._boxList[i])
+        this.selectedBoxList.push(this._workbench._boxList[i])
+        // this._selectedGroup.add(this._workbench._boxList[i])
       }
     }
 
-    const rect = this._selectedGroup.getBoundingRect()
+    const rect = getBoundingRect(this.selectedBoxList)
+    console.log(rect)
     this.updateRectPosition(rect.x, rect.y, rect.width, rect.height)
     // 通知workbench，处理选择完成
     if (typeof this._selectDoneCallback === 'function') {
-      this._selectDoneCallback(this.selectBox)
+      this._selectDoneCallback(this.selectedBoxList)
     }
   }
 
   /**
    * 清除组内元素，并归位选择框
    */
-  clearGroup() {
+  reset() {
     this._selectedGroup.removeAll()
     this.updateRectPosition(0, 0, 0, 0)
   }
@@ -80,7 +90,7 @@ class BoxSelection {
    * @private
    */
   _makeSelectRect() {
-    return new Zrender.Rect({
+    return new Rect({
       draggable: true,
       zlevel: ZLevel.SELECT_VIEW,
       style: {
@@ -97,10 +107,11 @@ class BoxSelection {
       ondrag: (event) => {
         // TODO 批量处理移动 性能难过
         const v = [event.target.x - this._tempMoving[0],
-          event.target.y - this._tempMoving[1]]
+        event.target.y - this._tempMoving[1]]
         this._handleSelectedMove(v)
         this._tempMoving = [event.target.x, event.target.y]
       },
+      //@ts-ignore 扩充字段，给右键处理器
       menus: [
         { text: '左对齐', callback: () => { this.algin(Direction.LEFT) } },
         { text: '右对齐', callback: () => { this.algin(Direction.RIGHT) } },
@@ -118,13 +129,16 @@ class BoxSelection {
    */
   _bindingMouseEvent() {
     // 移动过程中，保持选择区域调整大小
-    const mousemove = (zrEvent) => {
-      this._selectRect.shape.width = zrEvent.offsetX - this._selectRect.x
-      this._selectRect.shape.height = zrEvent.offsetY - this._selectRect.y
+    const mousemove = (zrEvent: { offsetX: number; offsetY: number }) => {
+      console.log("mousemove")
+      const xy = this._scaleTool.transformCoordToLocal(zrEvent.offsetX, zrEvent.offsetY)
+      this._selectRect.shape.width = xy[0] - this._selectRect.x
+      this._selectRect.shape.height = xy[1] - this._selectRect.y
       this._selectRect.dirty()
     }
     // 鼠标抬起后，1. 计算框选范围 2.清理过程事件监听 3.触发框选完成
-    const mouseUP = (zrEvent) => {
+    const mouseUP = (_zrEvent: any) => {
+      console.log("mouseUP")
       const shape = {
         x: this._selectRect.x,
         y: this._selectRect.y,
@@ -148,13 +162,15 @@ class BoxSelection {
     }
 
     this._zr.on('mousedown', (zrEvent) => {
+      console.log("mouseDown")
       if (this._workbench.mode === WorkbenchMode.VIEW || zrEvent.target === this._selectRect) {
         return
       }
-      this.clearGroup()
       if (zrEvent.target || zrEvent.topTarget) return
-
-      this.updateRectPosition(zrEvent.offsetX, zrEvent.offsetY, 0, 0)
+      this.reset()
+     
+      const xy = this._scaleTool.transformCoordToLocal(zrEvent.offsetX, zrEvent.offsetY)
+      this.updateRectPosition(xy[0],xy[1], 0, 0)
       this._zr.on('mousemove', mousemove)
       this._zr.on('mouseup', mouseUP)
     })
@@ -168,7 +184,7 @@ class BoxSelection {
    * @param w
    * @param h
    */
-  updateRectPosition(x, y, w, h) {
+  updateRectPosition(x: number, y: number, w: number, h: number) {
     this._selectRect.shape = {
       x: 0,
       y: 0,
@@ -187,8 +203,8 @@ class BoxSelection {
    * @param {number[]} v 移动向量
    * @private
    */
-  _handleSelectedMove(v) {
-    const children = this._selectedGroup.childrenRef()
+  _handleSelectedMove(v: number[]) {
+    const children =this.selectedBoxList
     for (let i = 0; i < children.length; i++) {
       const node = children[i]
       node.resize(node.x + v[0], node.y + v[1], node.width, node.height)
@@ -200,10 +216,10 @@ class BoxSelection {
    * 对齐
    * @param {number} direction 方向
    */
-  algin(direction) {
-    alignNodes(this.selectBox, direction)
-    for (let i = 0; i < this.selectBox.length; i++) {
-      this._workbench._redrawLineWhenBoxChange(this.selectBox[i])
+  algin(direction: String) {
+    alignNodes(this.selectedBoxList, direction)
+    for (let i = 0; i < this.selectedBoxList.length; i++) {
+      this._workbench._redrawLineWhenBoxChange(this.selectedBoxList[i])
     }
   }
 
@@ -211,8 +227,8 @@ class BoxSelection {
    * 删除选中的节点
    */
   deleteSelected() {
-    for (let i = 0; i < this.selectBox.length; i++) {
-      this._workbench.removeBox(this.selectBox[i])
+    for (let i = 0; i < this.selectedBoxList.length; i++) {
+      this._workbench.removeBox(this.selectedBoxList[i])
     }
   }
 }
