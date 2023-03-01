@@ -214,10 +214,10 @@ class Workbench {
     const data = canvasEl.toDataURL('image/png')
     return data
   }
-  
+
   /**
    * 获取全局变换参数
-   * @returns {scale:number[],origin:number[],offset:number[]} 变换参数 
+   * @returns {scale:number[],origin:number[],offset:number[]} 变换参数
    */
   getTransform(){
     return this._scaleTool.getTransform()
@@ -227,7 +227,7 @@ class Workbench {
    * @param param {{scale:number[],origin:number[],offset:number[]}} 变换参数
    */
   setTransFrom(param){
-    this._scaleTool.setTransFrom(param)
+    this._scaleTool.setTransform(param)
   }
   /**
    * 清除所有元素
