@@ -214,7 +214,21 @@ class Workbench {
     const data = canvasEl.toDataURL('image/png')
     return data
   }
-
+  
+  /**
+   * 获取全局变换参数
+   * @returns {scale:number[],origin:number[],offset:number[]} 变换参数 
+   */
+  getTransform(){
+    return this._scaleTool.getTransform()
+  }
+  /**
+   * 设置全局变换
+   * @param param {{scale:number[],origin:number[],offset:number[]}} 变换参数
+   */
+  setTransFrom(param){
+    this._scaleTool.setTransFrom(param)
+  }
   /**
    * 清除所有元素
    */

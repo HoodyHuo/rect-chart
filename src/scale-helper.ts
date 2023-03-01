@@ -104,5 +104,28 @@ class ScaleHelper {
   remove(shape: Element) {
     this.group.remove(shape)
   }
+
+  /**
+   * 获取全局变换参数
+   * @returns 变换参数
+   */
+  getTransform() : {scale:number[],origin:number[],offset:number[]}{
+    const group = this.group
+    return {
+      scale: [group.scaleX, group.scaleY],
+      origin: [group.originX, group.originY],
+      offset: [group.x, group.y]
+    }
+  }
+  /**
+   * 设置全局变换
+   * @param param 变换参数
+   */
+  setTransform(param: {scale:number[],origin:number[],offset:number[]}){
+      this.group.setPosition(param.offset)
+      this.group.setOrigin(param.origin)
+      this.group.setScale(param.scale)
+  }
 }
+
 export default ScaleHelper
