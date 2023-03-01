@@ -1,7 +1,7 @@
 import { WorkbenchMode, ZLevel } from './shape/Const'
 import { Direction } from './orth/Constant'
 import { Group, ZRenderType, Rect } from 'zrender'
-import { alignNodes, boxContain,getBoundingRect } from './util'
+import { alignNodes, boxContain, getBoundingRect } from './util'
 import Workbench from './workbench'
 import NodeBox from './shape/NodeBox'
 import ScaleHelper from './scale-helper'
@@ -11,18 +11,18 @@ import ScaleHelper from './scale-helper'
  * 帮助工作台完成框选及框选移动相关事件
  */
 class BoxSelection {
-  _zr: ZRenderType// zrender 实例
+  _zr: ZRenderType // zrender 实例
 
-  _workbench: Workbench// 工作台实例
+  _workbench: Workbench // 工作台实例
   _scaleTool: ScaleHelper
 
   _selectRect: Rect // 框选图形（展示用）
-  _selectedGroup: Group// 框选到的元素统一加入此group
+  _selectedGroup: Group // 框选到的元素统一加入此group
   _tempMoving: number[] = [0, 0] // 用于临时记录拖动量，操作完毕后清除
 
   selectedBoxList: NodeBox[] = []
 
-  _selectDoneCallback: (arg1: NodeBox[]) => void// 框选完毕回调
+  _selectDoneCallback: (arg1: NodeBox[]) => void // 框选完毕回调
 
   /**
    * 构造函数
@@ -38,10 +38,10 @@ class BoxSelection {
     this._selectDoneCallback = onSelected
     // 创建框选范围展示shape
     this._selectRect = this._makeSelectRect()
-    this._scaleTool.add(this._selectRect) 
+    this._scaleTool.add(this._selectRect)
 
     this._selectedGroup = new Group({
-      draggable: false
+      draggable: false,
     })
     this._bindingMouseEvent()
   }
@@ -56,8 +56,8 @@ class BoxSelection {
    * @param p.width 宽
    * @param p.height 高
    * @private
-   * 
-   *///@ts-ignore
+   *
+   */ //@ts-ignore
   _handleSelectRect({ x, y, width, height }) {
     this.selectedBoxList = []
     for (let i = 0; i < this._workbench._boxList.length; i++) {
@@ -96,30 +96,53 @@ class BoxSelection {
       style: {
         opacity: 0.3,
         fill: '#8f8ccb',
-        stroke: '#8f8ccb'
+        stroke: '#8f8ccb',
       },
       shape: {
         x: 0,
         y: 0,
         width: 0,
-        height: 0
+        height: 0,
       },
       ondrag: (event) => {
         // TODO 批量处理移动 性能难过
-        const v = [event.target.x - this._tempMoving[0],
-        event.target.y - this._tempMoving[1]]
+        const v = [event.target.x - this._tempMoving[0], event.target.y - this._tempMoving[1]]
         this._handleSelectedMove(v)
         this._tempMoving = [event.target.x, event.target.y]
       },
       //@ts-ignore 扩充字段，给右键处理器
       menus: [
-        { text: '左对齐', callback: () => { this.algin(Direction.LEFT) } },
-        { text: '右对齐', callback: () => { this.algin(Direction.RIGHT) } },
-        { text: '上对齐', callback: () => { this.algin(Direction.TOP) } },
-        { text: '下对齐', callback: () => { this.algin(Direction.BOTTOM) } },
-        { text: '删除', callback: () => { this.deleteSelected() } }
-
-      ]
+        {
+          text: '左对齐',
+          callback: () => {
+            this.algin(Direction.LEFT)
+          },
+        },
+        {
+          text: '右对齐',
+          callback: () => {
+            this.algin(Direction.RIGHT)
+          },
+        },
+        {
+          text: '上对齐',
+          callback: () => {
+            this.algin(Direction.TOP)
+          },
+        },
+        {
+          text: '下对齐',
+          callback: () => {
+            this.algin(Direction.BOTTOM)
+          },
+        },
+        {
+          text: '删除',
+          callback: () => {
+            this.deleteSelected()
+          },
+        },
+      ],
     })
   }
 
@@ -130,7 +153,7 @@ class BoxSelection {
   _bindingMouseEvent() {
     // 移动过程中，保持选择区域调整大小
     const mousemove = (zrEvent: { offsetX: number; offsetY: number }) => {
-      console.log("mousemove")
+      console.log('mousemove')
       const xy = this._scaleTool.transformCoordToLocal(zrEvent.offsetX, zrEvent.offsetY)
       this._selectRect.shape.width = xy[0] - this._selectRect.x
       this._selectRect.shape.height = xy[1] - this._selectRect.y
@@ -138,12 +161,12 @@ class BoxSelection {
     }
     // 鼠标抬起后，1. 计算框选范围 2.清理过程事件监听 3.触发框选完成
     const mouseUP = (_zrEvent: any) => {
-      console.log("mouseUP")
+      console.log('mouseUP')
       const shape = {
         x: this._selectRect.x,
         y: this._selectRect.y,
         width: this._selectRect.shape.width,
-        height: this._selectRect.shape.height
+        height: this._selectRect.shape.height,
       } // 拷贝
       // 规整负数高宽
       if (shape.height < 0) {
@@ -162,15 +185,15 @@ class BoxSelection {
     }
 
     this._zr.on('mousedown', (zrEvent) => {
-      console.log("mouseDown")
+      console.log('mouseDown')
       if (this._workbench.mode === WorkbenchMode.VIEW || zrEvent.target === this._selectRect) {
         return
       }
       if (zrEvent.target || zrEvent.topTarget) return
       this.reset()
-     
+
       const xy = this._scaleTool.transformCoordToLocal(zrEvent.offsetX, zrEvent.offsetY)
-      this.updateRectPosition(xy[0],xy[1], 0, 0)
+      this.updateRectPosition(xy[0], xy[1], 0, 0)
       this._zr.on('mousemove', mousemove)
       this._zr.on('mouseup', mouseUP)
     })
@@ -189,7 +212,7 @@ class BoxSelection {
       x: 0,
       y: 0,
       width: w,
-      height: h
+      height: h,
     }
     this._selectRect.x = x
     this._selectRect.y = y
@@ -204,7 +227,7 @@ class BoxSelection {
    * @private
    */
   _handleSelectedMove(v: number[]) {
-    const children =this.selectedBoxList
+    const children = this.selectedBoxList
     for (let i = 0; i < children.length; i++) {
       const node = children[i]
       node.resize(node.x + v[0], node.y + v[1], node.width, node.height)

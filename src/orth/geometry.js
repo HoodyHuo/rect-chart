@@ -76,17 +76,13 @@ export const compressPath = (path) => {
   return compressed
 }
 
-export function lineLine(a1, a2, b1, b2
-) {
+export function lineLine(a1, a2, b1, b2) {
   // b1->b2向量 与 a1->b1向量的向量积
-  const ua_t =
-      (b2[0] - b1[0]) * (a1[1] - b1[1]) - (b2[1] - b1[1]) * (a1[0] - b1[0])
+  const ua_t = (b2[0] - b1[0]) * (a1[1] - b1[1]) - (b2[1] - b1[1]) * (a1[0] - b1[0])
   // a1->a2向量 与 a1->b1向量的向量积
-  const ub_t =
-      (a2[0] - a1[0]) * (a1[1] - b1[1]) - (a2[1] - a1[1]) * (a1[0] - b1[0])
+  const ub_t = (a2[0] - a1[0]) * (a1[1] - b1[1]) - (a2[1] - a1[1]) * (a1[0] - b1[0])
   // a1->a2向量 与 b1->b2向量的向量积
-  const u_b =
-      (b2[1] - b1[1]) * (a2[0] - a1[0]) - (b2[0] - b1[0]) * (a2[1] - a1[1])
+  const u_b = (b2[1] - b1[1]) * (a2[0] - a1[0]) - (b2[0] - b1[0]) * (a2[1] - a1[1])
   // u_b == 0时，角度为0或者180 平行或者共线不属于相交
   if (u_b !== 0) {
     const ua = ua_t / u_b
@@ -113,7 +109,7 @@ export const rectRect = (startBox, endBox) => {
 
   return (
     startBox.some((_, i) => lineRect(startBox[i], startBox[(i + 1) % l], endBox)) ||
-        endBox.some((_, i) => lineRect(endBox[i], endBox[(i + 1) % l], startBox))
+    endBox.some((_, i) => lineRect(endBox[i], endBox[(i + 1) % l], startBox))
   )
 }
 /**
@@ -126,13 +122,7 @@ export const rectRect = (startBox, endBox) => {
 export const isCollinear = (p, q, t) => {
   const accuracy = 0
   // 3点围成的三角形面积
-  const area =
-      p[0] * q[1] -
-      p[1] * q[0] +
-      q[0] * t[1] -
-      q[1] * t[0] +
-      t[0] * p[1] -
-      t[1] * p[0]
+  const area = p[0] * q[1] - p[1] * q[0] + q[0] * t[1] - q[1] * t[0] + t[0] * p[1] - t[1] * p[0]
   const edge = calculateEuclideanDist(p, q)
 
   return Math.abs(area / edge) <= accuracy
@@ -181,5 +171,4 @@ export const lineRect = (a1, a2, b) => {
  * @param {number[]} p2
  * @return {number[]}
  */
-export const getMidPoint = (p1, p2) =>
-  addV(p1, p2).map((item) => Math.round(item / 2))
+export const getMidPoint = (p1, p2) => addV(p1, p2).map((item) => Math.round(item / 2))

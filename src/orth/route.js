@@ -64,11 +64,10 @@ export const getIntersectPoints = (points) => {
 
 export const getPathFindingData = (start, end, minDist) => {
   // 两个盒子相交
-  const isIntersect =
-      start.box && end.box ? rectRect(start.box, end.box) : false
+  const isIntersect = start.box && end.box ? rectRect(start.box, end.box) : false
   const testBoxs = [
     [start.origin, end.box],
-    [end.origin, start.box]
+    [end.origin, start.box],
   ].filter((item) => item[1])
 
   // 起始点结速点都被另外一个盒子覆盖
@@ -81,22 +80,15 @@ export const getPathFindingData = (start, end, minDist) => {
     [endInfo.endpoint[0], midPoint[1]],
     [midPoint[0], startInfo.endpoint[1]],
     [midPoint[0], endInfo.endpoint[1]],
-    midPoint
+    midPoint,
   ]
 
   const waypoint = midPoint
   // number[][]
-  const allPoints = [
-    startInfo.endpoint,
-    endInfo.endpoint,
-    ...middlePoints
-  ]
+  const allPoints = [startInfo.endpoint, endInfo.endpoint, ...middlePoints]
 
   if (!isCovered) {
-    allPoints.push(
-      ...(startInfo.boundaryBox || []),
-      ...(endInfo.boundaryBox || [])
-    )
+    allPoints.push(...(startInfo.boundaryBox || []), ...(endInfo.boundaryBox || []))
   }
 
   return {
@@ -105,7 +97,6 @@ export const getPathFindingData = (start, end, minDist) => {
     startInfo,
     endInfo,
     allPoints: uniqPoints(getIntersectPoints(allPoints)),
-    waypoint
+    waypoint,
   }
 }
-

@@ -2,7 +2,7 @@ const ODirection = {
   TOP: 'top',
   LEFT: 'left',
   RIGHT: 'right',
-  BOTTOM: 'bottom'
+  BOTTOM: 'bottom',
 }
 
 const getReverse = (direction) => {
@@ -20,4 +20,3 @@ const getReverse = (direction) => {
 ODirection.getReverse = getReverse
 
 export const Direction = { ...ODirection }
-

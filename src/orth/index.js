@@ -26,13 +26,13 @@ import find from './find'
 function getOrigin(box) {
   switch (box.direction) {
     case Direction.TOP:
-      return [box.x + (box.width / 2), box.y]
+      return [box.x + box.width / 2, box.y]
     case Direction.BOTTOM:
-      return [box.x + (box.width / 2), box.y + box.height]
+      return [box.x + box.width / 2, box.y + box.height]
     case Direction.LEFT:
-      return [box.x, box.y + (box.height / 2)]
+      return [box.x, box.y + box.height / 2]
     case Direction.RIGHT:
-      return [box.x + box.width, box.y + (box.height / 2)]
+      return [box.x + box.width, box.y + box.height / 2]
   }
 }
 
@@ -65,8 +65,7 @@ function _filteUselessPoints(path) {
   if (path[0][0] === path[2][0] || path[0][1] === path[2][1]) {
     path.splice(1, 1)
   }
-  if (path[path.length - 3][0] === path[path.length - 1][0] ||
-      path[path.length - 3][1] === path[path.length - 1][1]) {
+  if (path[path.length - 3][0] === path[path.length - 1][0] || path[path.length - 3][1] === path[path.length - 1][1]) {
     path.splice(path.length - 2, 1)
   }
   return path
@@ -130,14 +129,14 @@ export const createPath = (startParam, endParam, minDist) => {
     [startParam.x, startParam.y],
     [startParam.x + startParam.width, startParam.y],
     [startParam.x + startParam.width, startParam.y + startParam.height],
-    [startParam.x, startParam.y + startParam.height]
+    [startParam.x, startParam.y + startParam.height],
   ]
 
   const endBox = [
     [endParam.x, endParam.y],
     [endParam.x + endParam.width, endParam.y],
     [endParam.x + endParam.width, endParam.y + endParam.height],
-    [endParam.x, endParam.y + endParam.height]
+    [endParam.x, endParam.y + endParam.height],
   ]
   const startOrigin = getOrigin(startParam)
   const endOrigin = getOrigin(endParam)
@@ -145,19 +144,21 @@ export const createPath = (startParam, endParam, minDist) => {
   const start = { box: startBox, origin: startOrigin, direction: startParam.direction }
   const end = { box: endBox, origin: endOrigin, direction: endParam.direction }
 
-  const { isCovered, isIntersect, startInfo, endInfo, allPoints, waypoint } =
-      getPathFindingData(start, end, minDist)
+  const { isCovered, isIntersect, startInfo, endInfo, allPoints, waypoint } = getPathFindingData(start, end, minDist)
 
   const checkedBoxs = [
     startInfo.boundaryBox && extendBox(startInfo.boundaryBox, -1),
-    endInfo.boundaryBox && extendBox(endInfo.boundaryBox, -1)
+    endInfo.boundaryBox && extendBox(endInfo.boundaryBox, -1),
   ].filter(Boolean)
 
   const checkedInnerBoxs = [startInfo.box, endInfo.box].filter(Boolean)
 
   // 相交且不是 coverd 并且方向相对才限制路径
-  const costFactor = isIntersect ? !isCovered &&
-      isOppositeDirection([startInfo.direction, endInfo.direction]) ? 2 : 0 : 5
+  const costFactor = isIntersect
+    ? !isCovered && isOppositeDirection([startInfo.direction, endInfo.direction])
+      ? 2
+      : 0
+    : 5
   const shouldCheck = checkedBoxs.length === 2 ? !isIntersect : !isCovered
 
   const grid = new Grid(allPoints, {
@@ -189,23 +190,21 @@ export const createPath = (startParam, endParam, minDist) => {
       }
 
       return true
-    }
+    },
   })
 
   const result = find(grid, {
     startInfo,
     endInfo,
     isCovered,
-    waypoint: isOppositeDirection([startInfo.direction, endInfo.direction])
-      ? waypoint
-      : undefined,
+    waypoint: isOppositeDirection([startInfo.direction, endInfo.direction]) ? waypoint : undefined,
     checkWaypointWalkable: (from, to) => {
       if (isCovered) {
         return true
       }
 
       return checkedBoxs.every((item) => !lineRect(from, to, item))
-    }
+    },
   })
   // return {
   //   path: result,
@@ -249,6 +248,5 @@ export const calculateScalePosition = (box, position) => {
  * @return {{x: number, y: number}} position
  */
 export const calculatePosition = (box, scalePosition) => {
-  return { x: box.x + box.width * scalePosition.scaleX,
-    y: box.y + box.height * scalePosition.scaleY }
+  return { x: box.x + box.width * scalePosition.scaleX, y: box.y + box.height * scalePosition.scaleY }
 }

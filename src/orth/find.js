@@ -26,36 +26,25 @@ const find = (
     endInfo,
     waypoint,
     isCovered,
-    checkWaypointWalkable
+    checkWaypointWalkable,
     // }: {
     //     startInfo: PathFindingPointData;
     //     endInfo: PathFindingPointData;
     //     waypoint?: number[];
     //     isCovered: boolean;
     //     checkWaypointWalkable: (from: number[], to: number[]) => boolean;
-  }
+  },
 ) => {
-  const followWaypoint =
-        waypoint &&
-        checkCanFollowWaypoint(
-          startInfo,
-          endInfo,
-          waypoint,
-          grid,
-          checkWaypointWalkable
-        )
+  const followWaypoint = waypoint && checkCanFollowWaypoint(startInfo, endInfo, waypoint, grid, checkWaypointWalkable)
 
   /**
-     *
-     * @param {number[]} current
-     * @param {Grid} grid
-     * @return {*}
-     */
+   *
+   * @param {number[]} current
+   * @param {Grid} grid
+   * @return {*}
+   */
   const heuristic = (current, grid) => {
-    const h1 = calculateManhattanDist(
-      current,
-      grid.getGridPoint(endInfo.endpoint)
-    )
+    const h1 = calculateManhattanDist(current, grid.getGridPoint(endInfo.endpoint))
 
     if (!followWaypoint) {
       return h1
@@ -65,14 +54,7 @@ const find = (
   }
 
   if (isCovered) {
-    const temp = A(
-      grid,
-      startInfo.endpoint,
-      endInfo.endpoint,
-      startInfo.direction,
-      endInfo.direction,
-      heuristic
-    )
+    const temp = A(grid, startInfo.endpoint, endInfo.endpoint, startInfo.direction, endInfo.direction, heuristic)
     temp.path.push(endInfo.origin)
     temp.path.unshift(startInfo.origin)
 
@@ -81,15 +63,7 @@ const find = (
 
   const result = [0, 1, 2, 4]
     .map((index) =>
-      A(
-        grid,
-        startInfo.endpoint,
-        endInfo.endpoint,
-        startInfo.direction,
-        endInfo.direction,
-        heuristic,
-        index
-      )
+      A(grid, startInfo.endpoint, endInfo.endpoint, startInfo.direction, endInfo.direction, heuristic, index),
     )
     .filter((item) => item.path.length)
 
@@ -108,14 +82,10 @@ const find = (
     const d2 = getNumberOfInflectionPoints(completedPath)
 
     /**
-         * 1. 拐点数都相同时取最小的 G
-         * 2. 先取不包含起始点的最小拐点数，再判断包含了起始点的最小拐点数
-         */
-    if (
-      d1 < min1 ||
-            (d1 === min1 && d2 < min2) ||
-            (d1 === min1 && d2 === min2 && item.G < target.G)
-    ) {
+     * 1. 拐点数都相同时取最小的 G
+     * 2. 先取不包含起始点的最小拐点数，再判断包含了起始点的最小拐点数
+     */
+    if (d1 < min1 || (d1 === min1 && d2 < min2) || (d1 === min1 && d2 === min2 && item.G < target.G)) {
       min1 = d1
       min2 = d2
       target = item
@@ -126,7 +96,7 @@ const find = (
     target = {
       grid,
       path: [],
-      G: Infinity
+      G: Infinity,
     }
 
     console.warn('Path not found')

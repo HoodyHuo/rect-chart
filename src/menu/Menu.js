@@ -1,4 +1,3 @@
-
 import MenuItem from './MenuItem'
 import { ZLevel } from '../shape/Const'
 const Zrender = require('zrender')
@@ -38,16 +37,12 @@ class Menu {
     this.zr = zr
     this.owner = owner
     this.shape = new Zrender.Group({
-      zlevel: ZLevel.CONTEXT_MENU
+      zlevel: ZLevel.CONTEXT_MENU,
     })
 
     // 创建items
     for (let i = 0; i < itemsProp.length; i++) {
-      const menuItem = new MenuItem(
-        i,
-        owner,
-        itemsProp[i].text, itemsProp[i].callback, itemsProp[i].icon
-      )
+      const menuItem = new MenuItem(i, owner, itemsProp[i].text, itemsProp[i].callback, itemsProp[i].icon)
       this.menuItems.push(menuItem)
       this.shape.add(menuItem)
     }

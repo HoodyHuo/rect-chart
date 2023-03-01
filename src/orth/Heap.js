@@ -1,7 +1,6 @@
-
 class Heap {
   // [null, ...D[]]
-  heap;
+  heap
 
   constructor() {
     this.heap = [null]
@@ -64,7 +63,7 @@ class Heap {
       mid = index >> 1
 
       if (this.heap[index].compare(this.heap[mid]) < 0) {
-      // if (this.heap[index]!.compare(this.heap[mid]!) < 0) {
+        // if (this.heap[index]!.compare(this.heap[mid]!) < 0) {
         this.swap(index, mid)
         index = mid
       } else {

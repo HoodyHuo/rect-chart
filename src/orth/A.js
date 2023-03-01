@@ -5,9 +5,9 @@ import { checkDirectionIsValid, getMoveDelta } from './layoutUtil'
 import Point from './Point'
 import Heap from './Heap'
 
-const heap = new Heap()// <Point>()
-const marked = new Map()// <string, Point>()
-const openMap = new Map()// <string, Point>()
+const heap = new Heap() // <Point>()
+const marked = new Map() // <string, Point>()
+const openMap = new Map() // <string, Point>()
 
 /**
  *
@@ -37,15 +37,7 @@ const getDirection = (from, to) => {
  * @return {{path: (number[][]|[]), grid: Grid, G: number}}
  * @constructor
  */
-function A(
-  grid,
-  start,
-  end,
-  startDirection,
-  endDirection,
-  heuristic,
-  index
-) {
+function A(grid, start, end, startDirection, endDirection, heuristic, index) {
   const startCoord = grid.getGridPoint(start)
   const endCoord = grid.getGridPoint(end)
 
@@ -53,7 +45,7 @@ function A(
   const startP = new Point(startCoord)
   const endP = new Point(endCoord)
 
-  const path = []// number[][]
+  const path = [] // number[][]
 
   let isFirst = true
   let G = 0
@@ -69,10 +61,7 @@ function A(
     openMap.delete(minP.key)
 
     if (minP.key === endP.key) {
-      if (
-        minP.parent &&
-        !checkDirectionIsValid(minP.parent.xy, xy, endDirection)
-      ) {
+      if (minP.parent && !checkDirectionIsValid(minP.parent.xy, xy, endDirection)) {
         continue
       }
       let tmp = minP // Point || null
@@ -90,12 +79,7 @@ function A(
     marked.set(minP.key, minP)
 
     const move = getMoveDelta(startDirection, isFirst)
-    const neighbors =
-      index !== undefined
-        ? isFirst
-          ? move.slice(index, index + 1)
-          : move
-        : move
+    const neighbors = index !== undefined ? (isFirst ? move.slice(index, index + 1) : move) : move
     isFirst = false
 
     neighbors.forEach(([dx, dy]) => {
@@ -134,7 +118,7 @@ function A(
   return {
     path: compressPath(path),
     grid,
-    G
+    G,
   }
 }
 

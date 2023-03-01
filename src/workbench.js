@@ -28,8 +28,8 @@ class Workbench {
   mode // 工作模式 @see WorkbenchMode
 
   /** 功能辅助对象 */
-  boxSelection = null// 框选器
-  _menuShape = null// 菜单对象，负责右键菜单处理
+  boxSelection = null // 框选器
+  _menuShape = null // 菜单对象，负责右键菜单处理
   _scaleTool = null // 缩放处理对象
 
   /** 点击选中暂存属性 */
@@ -61,7 +61,7 @@ class Workbench {
    */
   constructor(options) {
     this._elOri = options.el
-    fixSize(this._elOri)// 固定el大小
+    fixSize(this._elOri) // 固定el大小
     // 创建zrender挂载元素
     const zrenderEL = document.createElement('div')
     zrenderEL.style.width = this._elOri.clientWidth * 4 + 'px'
@@ -84,7 +84,7 @@ class Workbench {
     this._initResizeBox()
     this._createNodes()
     this._createLines()
-    this.boxSelection = new BoxSelection(this._zr, this,this._scaleTool, this._onRectSelected)
+    this.boxSelection = new BoxSelection(this._zr, this, this._scaleTool, this._onRectSelected)
     this._menuShape = new MenuHandler(this._zr)
   }
 
@@ -115,13 +115,13 @@ class Workbench {
       onCreateLine: this._onCreateLine.bind(this),
       onMoveLine: this._onMoveLine.bind(this),
       onEndLine: this._onEndLine.bind(this),
-      z: this._boxList.length
+      z: this._boxList.length,
     }
 
     options.x = options.x + options.width / 2
     options.y = options.y + options.height / 2
     const node = new NodeBox(options)
-    this._scaleTool.add(node) 
+    this._scaleTool.add(node)
 
     this._scaleTool.group.add(node)
 
@@ -140,11 +140,14 @@ class Workbench {
   tempNodeMoving(event, position) {
     if (this._tempNode && this._tempNode instanceof NodeBox) {
       //计算窗口位置移到缩放group之后的局部坐标
-      const xy =  this._scaleTool.transformCoordToLocal(position.x,position.y)
+      const xy = this._scaleTool.transformCoordToLocal(position.x, position.y)
 
       this._tempNode.resize(
-        xy[0] - this._tempNode.width / 2, xy[1] - this._tempNode.height / 2,
-        this._tempNode.width, this._tempNode.height)
+        xy[0] - this._tempNode.width / 2,
+        xy[1] - this._tempNode.height / 2,
+        this._tempNode.width,
+        this._tempNode.height,
+      )
     }
   }
 
@@ -163,7 +166,6 @@ class Workbench {
     this._tempNode = null
   }
 
-
   /**
    * 保存函数，提取所有节点和线段记录，用于下次加载
    * @return {{nodes: [], lines: []}}
@@ -176,7 +178,7 @@ class Workbench {
         target: line.target,
         from: line.from,
         to: line.to,
-        path: line.path
+        path: line.path,
       })
     }
 
@@ -189,7 +191,7 @@ class Workbench {
         width: box.width,
         height: box.height,
         name: box.name,
-        target: box.target
+        target: box.target,
       })
     }
 
@@ -205,9 +207,7 @@ class Workbench {
     // 提取内容区域
     const { minX, minY, maxX, maxY } = calcContentRect(this._boxList, this._lineList)
     // 获取制定区域图像
-    const canvasEl = getCanvasCopyFromZrender(this._zr,
-      { x: minX, y: minY, w: maxX - minX, h: maxY - minY },
-      padding)
+    const canvasEl = getCanvasCopyFromZrender(this._zr, { x: minX, y: minY, w: maxX - minX, h: maxY - minY }, padding)
     // 转换base64
     const data = canvasEl.toDataURL('image/png')
     return data
@@ -262,7 +262,7 @@ class Workbench {
    */
   _initScale() {
     // 初始化缩放辅助对象
-    const scaleTool = new ScaleHelper(this._zr,this, this._elOri, 1)
+    const scaleTool = new ScaleHelper(this._zr, this, this._elOri, 1)
     // 根据内容进行缩放
     scaleTool.reScaleByContent(this._boxList, this._lineList)
     return scaleTool
@@ -281,7 +281,7 @@ class Workbench {
         move: this._onNodeMove.bind(this),
         onCreateLine: this._onCreateLine.bind(this),
         onMoveLine: this._onMoveLine.bind(this),
-        onEndLine: this._onEndLine.bind(this)
+        onEndLine: this._onEndLine.bind(this),
       }
       Object.assign(opt2, nodeData)
       opt2.z = i + 1
@@ -301,8 +301,7 @@ class Workbench {
   getPositionBox(position) {
     let box = null
     for (let i = 0; i < this._boxList.length; i++) {
-      if (inBox(position, this._boxList[i]) &&
-        (box === null || this._boxList[i].z1 > box.z1)) {
+      if (inBox(position, this._boxList[i]) && (box === null || this._boxList[i].z1 > box.z1)) {
         box = this._boxList[i]
       }
     }
@@ -318,20 +317,26 @@ class Workbench {
    * @private
    */
   _onCreateLine(startBox, direction, position) {
-    const path = createPath({
-      x: startBox.x,
-      y: startBox.y,
-      width: startBox.width,
-      height: startBox.height,
-      direction: direction
-    }, {
-      x: position.x - 2,
-      y: position.y - 2,
-      width: 4,
-      height: 4,
-      direction: Direction.getReverse(direction)
-    }, 20)
-    let scaleStart = { x: position.x, y: position.y }
+    const xy = this._scaleTool.transformCoordToLocal(position.x, position.y)
+
+    const path = createPath(
+      {
+        x: startBox.x,
+        y: startBox.y,
+        width: startBox.width,
+        height: startBox.height,
+        direction: direction,
+      },
+      {
+        x: xy[0] - 2,
+        y: xy[1] - 2,
+        width: 4,
+        height: 4,
+        direction: Direction.getReverse(direction),
+      },
+      20,
+    )
+    let scaleStart = { x: xy[0], y: xy[1] }
     if (path) {
       scaleStart = calculateScalePosition(startBox, { x: path[0][0], y: path[0][1] })
     }
@@ -344,14 +349,14 @@ class Workbench {
         target: startBox.target,
         scaleX: scaleStart.x,
         scaleY: scaleStart.y,
-        direction: direction
+        direction: direction,
       },
       to: null,
       workbench: this,
       showHandle: true,
-      clickCallback: this._onLineClick.bind(this)
+      clickCallback: this._onLineClick.bind(this),
     })
- 
+
     this._scaleTool.add(line)
     this._tempLine = line
   }
@@ -366,9 +371,7 @@ class Workbench {
    *
    * @private
    */
-  _onMoveLine(startBox, startDirection,
-    position,
-    endBox, endDirection) {
+  _onMoveLine(startBox, startDirection, position, endBox, endDirection) {
     if (this._tempLine == null) return
     const path = createPath(
       {
@@ -376,14 +379,16 @@ class Workbench {
         y: startBox.y,
         width: startBox.width,
         height: startBox.height,
-        direction: startDirection
-      }, {
+        direction: startDirection,
+      },
+      {
         x: position.x,
         y: position.y,
         width: 0,
         height: 0,
-        direction: endDirection || subDirection(position, culaPosition(startBox, startDirection))
-      }, 20
+        direction: endDirection || subDirection(position, culaPosition(startBox, startDirection)),
+      },
+      20,
     )
     this._tempLine.updatePath(path, startBox, startDirection, endBox, endDirection)
   }
@@ -450,12 +455,18 @@ class Workbench {
       line.selected(true) // 设置被选中
       this._onNodeClick(null) // 设置所有节点为未选中状态
       // 触发线选中事件上报
-      this._onLineSelected(event, line, line ? {
-        from: line.from,
-        to: line.to,
-        path: line.path,
-        target: line.target
-      } : null)
+      this._onLineSelected(
+        event,
+        line,
+        line
+          ? {
+              from: line.from,
+              to: line.to,
+              path: line.path,
+              target: line.target,
+            }
+          : null,
+      )
     }
     this.selectedLine = line || null
   }
@@ -477,9 +488,9 @@ class Workbench {
    */
   _initResizeBox() {
     const resizeBox = new EditShape({
-      onSizeChange: this._onSizeChange.bind(this)
+      onSizeChange: this._onSizeChange.bind(this),
     })
-    resizeBox.hide() 
+    resizeBox.hide()
     this._scaleTool.add(resizeBox)
     this._resizeBox = resizeBox
   }
@@ -626,10 +637,10 @@ class Workbench {
         state: tempLine.state,
         workbench: this,
         mode: this.mode,
-        clickCallback: this._onLineClick.bind(this)
+        clickCallback: this._onLineClick.bind(this),
       })
       this._lineList.push(line)
-      this._scaleTool.add(line) 
+      this._scaleTool.add(line)
     }
   }
 }

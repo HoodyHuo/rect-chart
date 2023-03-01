@@ -1,7 +1,7 @@
 import Workbench from './workbench'
-import {  WorkbenchMode } from "./shape/Const";
+import { WorkbenchMode } from './shape/Const'
 
-export default{
-   Workbench,
-   WorkbenchMode:WorkbenchMode,
+export default {
+  Workbench,
+  WorkbenchMode: WorkbenchMode,
 }

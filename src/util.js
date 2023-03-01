@@ -38,10 +38,7 @@ export const getCanvasCopyFromZrender = (zrenderIns, size, padding) => {
   for (let i = 0; i < zLevelList.length; i++) {
     const _zlevel = zLevelList[i]
     const ctxTemp = layerList[_zlevel].dom
-    ctx.drawImage(ctxTemp,
-      size.x, size.y, size.w, size.h,
-      padding, padding, size.w, size.h
-    )
+    ctx.drawImage(ctxTemp, size.x, size.y, size.w, size.h, padding, padding, size.w, size.h)
   }
 
   return canvasEl
@@ -95,10 +92,12 @@ export const calcContentRect = (nods, lines) => {
  * @returns {boolean}
  */
 export const boxContain = (rect, box) => {
-  return box.x > rect.x &&
+  return (
+    box.x > rect.x &&
     box.y > rect.y &&
     box.width + box.x < rect.width + rect.x &&
     box.height + box.y < rect.height + rect.y
+  )
 }
 
 // 固定尺寸，并且设置滚动
@@ -117,9 +116,10 @@ export function fixSize(el) {
  * @returns {*}
  */
 export const findParent = (shape) => {
-  if (typeof shape.parent !== 'undefined' 
-  && shape.parent !== null 
-  && shape.parent.name !== "scale" // 排除最顶层的缩放group
+  if (
+    typeof shape.parent !== 'undefined' &&
+    shape.parent !== null &&
+    shape.parent.name !== 'scale' // 排除最顶层的缩放group
   ) {
     return findParent(shape.parent)
   } else {
@@ -131,28 +131,28 @@ export function alignNodes(nodes, direction) {
   switch (direction) {
     case Direction.LEFT:
       // eslint-disable-next-line no-case-declarations
-      const left = Math.min(...nodes.map(it => it.x))
+      const left = Math.min(...nodes.map((it) => it.x))
       for (let i = 0; i < nodes.length; i++) {
         nodes[i].resize(left, nodes[i].y, nodes[i].width, nodes[i].height)
       }
       break
     case Direction.RIGHT:
       // eslint-disable-next-line no-case-declarations
-      const right = Math.max(...nodes.map(it => it.x + it.width))
+      const right = Math.max(...nodes.map((it) => it.x + it.width))
       for (let i = 0; i < nodes.length; i++) {
         nodes[i].resize(right - nodes[i].width, nodes[i].y, nodes[i].width, nodes[i].height)
       }
       break
     case Direction.TOP:
       // eslint-disable-next-line no-case-declarations
-      const top = Math.min(...nodes.map(it => it.y))
+      const top = Math.min(...nodes.map((it) => it.y))
       for (let i = 0; i < nodes.length; i++) {
         nodes[i].resize(nodes[i].x, top, nodes[i].width, nodes[i].height)
       }
       break
     case Direction.BOTTOM:
       // eslint-disable-next-line no-case-declarations
-      const bottom = Math.max(...nodes.map(it => it.y + it.height))
+      const bottom = Math.max(...nodes.map((it) => it.y + it.height))
       for (let i = 0; i < nodes.length; i++) {
         nodes[i].resize(nodes[i].x, bottom - nodes[i].height, nodes[i].width, nodes[i].height)
       }
@@ -160,13 +160,15 @@ export function alignNodes(nodes, direction) {
   }
 }
 
-
 export function getBoundingRect(boxList) {
-if(boxList.length<1){
-  return {
-    x:0,y:0,width:0,height:0
+  if (boxList.length < 1) {
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    }
   }
-}
 
   let x1 = Number.MAX_VALUE
   let x2 = Number.MIN_VALUE
@@ -183,5 +185,4 @@ if(boxList.length<1){
   }
 
   return { x: x1, y: y1, width: x2 - x1, height: y2 - y1 }
-
 }

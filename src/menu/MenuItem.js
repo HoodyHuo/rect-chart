@@ -50,7 +50,7 @@ class MenuItem extends Zrender.Group {
       draggable: false,
       onclick: (event) => {
         this.callback.call(owner, event)
-      }
+      },
     })
     this.index = index
     this.text = text
@@ -73,7 +73,7 @@ class MenuItem extends Zrender.Group {
         x: 0,
         y: this.index * MenuConfig.HEIGHT,
         width: MenuConfig.HEIGHT,
-        height: MenuConfig.HEIGHT
+        height: MenuConfig.HEIGHT,
       })
       this.add(this.iconImage)
     }
@@ -85,12 +85,12 @@ class MenuItem extends Zrender.Group {
         x: 0,
         y: this.index * MenuConfig.HEIGHT,
         width: MenuConfig.WIDTH,
-        height: MenuConfig.HEIGHT
+        height: MenuConfig.HEIGHT,
       },
       style: {
         fill: MenuConfig.BG_COLOR,
-        stroke: '#fa0000'
-      }
+        stroke: '#fa0000',
+      },
     })
     this.add(this.backgroundShape)
 
@@ -106,8 +106,8 @@ class MenuItem extends Zrender.Group {
         ellipsis: '.',
         fill: MenuConfig.FONT_COLOR,
         fontSize: MenuConfig.FONT_SIZE,
-        width: MenuConfig.WIDTH - MenuConfig.HEIGHT
-      }
+        width: MenuConfig.WIDTH - MenuConfig.HEIGHT,
+      },
     })
     this.add(this.textShape)
   }

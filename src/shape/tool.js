@@ -1,4 +1,3 @@
-
 import { Direction } from '../orth/Constant'
 
 /**
@@ -15,10 +14,12 @@ import { Direction } from '../orth/Constant'
  * @return {{pos: {x: number, y: number}, direction: string}}
  */
 export const alignBorder = (position, box) => {
-  if (position.x >= box.x &&
-        position.y >= box.y &&
-        position.x <= box.x + box.width &&
-        position.y <= box.y + box.height) {
+  if (
+    position.x >= box.x &&
+    position.y >= box.y &&
+    position.x <= box.x + box.width &&
+    position.y <= box.y + box.height
+  ) {
     const sort = []
     sort.push({ p: Direction.TOP, v: Math.abs(position.y - box.y) })
     sort.push({ p: Direction.BOTTOM, v: Math.abs(position.y - (box.y + box.height)) })

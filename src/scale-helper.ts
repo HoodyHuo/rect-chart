@@ -1,5 +1,5 @@
 import { calcContentRect } from './util'
-import { Group, ZRenderType,Element } from 'zrender'
+import { Group, ZRenderType, Element } from 'zrender'
 import Line from './shape/Line'
 import NodeBox from './shape/NodeBox'
 import Workbench from './workbench'
@@ -13,19 +13,16 @@ class ScaleHelper {
    */
   scale: number = 1
   private _zr: ZRenderType
-  private _elOri: HTMLElement// 挂载的原始dom元素
+  private _elOri: HTMLElement // 挂载的原始dom元素
   private _workbench: Workbench
   group: Group
-
-
 
   constructor(zr: ZRenderType, workbench: Workbench, elOri: HTMLElement, scale: number) {
     this._elOri = elOri
     this.scale = scale
     this._zr = zr
     this._workbench = workbench
-
-    this.group = new Group({name:"scale"})
+    this.group = new Group({ name: 'scale' })
     this._zr.add(this.group)
     this._bindCtrl()
   }
@@ -37,7 +34,7 @@ class ScaleHelper {
         return
       }
       event.stop()
-      const result = this.scaleZrender(this.scale + (event.wheelDelta / 10), event)
+      const result = this.scaleZrender(this.scale + event.wheelDelta / 10, event)
       if (result) {
         this.scale += -event.wheelDelta / 10
       }
@@ -48,7 +45,6 @@ class ScaleHelper {
       this.group.dirty()
     }
 
-
     this._elOri.addEventListener('mousedown', (event: any) => {
       if (event.topTarget) {
         return
@@ -57,11 +53,11 @@ class ScaleHelper {
         return
       }
       // this.loadNodesLines()
-      this._elOri.addEventListener("mousemove", movePanel)
+      this._elOri.addEventListener('mousemove', movePanel)
     })
 
     this._elOri.addEventListener('mouseup', (event: any) => {
-      this._elOri.removeEventListener("mousemove", movePanel)
+      this._elOri.removeEventListener('mousemove', movePanel)
     })
   }
   /**
@@ -70,7 +66,6 @@ class ScaleHelper {
    * @param {event | null} event 缩放比例
    */
   scaleZrender(scale: number, event: null | any) {
-
     console.debug('SCALE:' + scale)
     // 比例小于0.2 则阻止缩放
     if (scale < 0.2 || scale > 2) {
@@ -84,47 +79,29 @@ class ScaleHelper {
     // 更新缓存的 缩放
     this.scale = scale
   }
-  /**
-   * 从workbench中加载所有Node和Line
-   */
-  private loadNodesLines() {
-    this.group.removeAll()
-
-    for (let nodebox of this._workbench._boxList) {
-      this.group.add(nodebox)
-    }
-    for (let line of this._workbench._lineList) {
-      this.group.add(line)
-    }
-  }
 
   reScaleByContent(nodes: NodeBox[], lines: Line[]) {
-
     // 寻找最右侧、最下侧元素位置
     const { maxX, maxY } = calcContentRect(nodes, lines)
 
-    const scale = Math.min(
-      1,
-      this._elOri.offsetWidth / (maxX + 100),
-      this._elOri.offsetHeight / (maxY + 100)
-    )
+    const scale = Math.min(1, this._elOri.offsetWidth / (maxX + 100), this._elOri.offsetHeight / (maxY + 100))
     this.scaleZrender(scale, null)
   }
-/**
- * 转换全局坐标到经过group处理后的坐标
- * @param x 全局X
- * @param y 全局Y
- * @returns 局部Xy
- */
+  /**
+   * 转换全局坐标到经过group处理后的坐标
+   * @param x 全局X
+   * @param y 全局Y
+   * @returns 局部Xy
+   */
   transformCoordToLocal(x: number, y: number): number[] {
     return this.group.transformCoordToLocal(x, y)
   }
 
-  add(shape:Element){
+  add(shape: Element) {
     this.group.add(shape)
   }
 
-  remove(shape:Element){
+  remove(shape: Element) {
     this.group.remove(shape)
   }
 }

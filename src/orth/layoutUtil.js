@@ -9,14 +9,14 @@ const moveDeltaConfig = {
   [Direction.LEFT]: [0, -1],
   [Direction.RIGHT]: [0, 1],
   [Direction.TOP]: [-1, 0],
-  [Direction.BOTTOM]: [1, 0]
+  [Direction.BOTTOM]: [1, 0],
 }
 
 const oppositeDirectionConfig = {
   [Direction.LEFT]: Direction.RIGHT,
   [Direction.TOP]: Direction.BOTTOM,
   [Direction.BOTTOM]: Direction.TOP,
-  [Direction.RIGHT]: Direction.LEFT
+  [Direction.RIGHT]: Direction.LEFT,
 }
 
 /**
@@ -60,11 +60,7 @@ export const extendBox = (box, d) => {
  * @param {function }canThrough (from: number[], to: number[]) => boolean
  * @return {boolean}
  */
-export const checkCanFollowWaypoint = (
-  start, end,
-  waypoint, grid,
-  canThrough
-) => {
+export const checkCanFollowWaypoint = (start, end, waypoint, grid, canThrough) => {
   if (!isOppositeDirection([start.direction, end.direction])) {
     return false
   }
@@ -73,9 +69,9 @@ export const checkCanFollowWaypoint = (
   const startCoord = grid.getGridPoint(start.endpoint)
   const endCoord = grid.getGridPoint(end.endpoint)
   const xLimits = [startCoord[0], endCoord[0]]
-  const yLimits = [startCoord[1], endCoord[1]];
+  const yLimits = [startCoord[1], endCoord[1]]
 
-  [xLimits, yLimits].forEach((item) => {
+  ;[xLimits, yLimits].forEach((item) => {
     item.sort((a, b) => a - b)
   })
 
@@ -88,8 +84,7 @@ export const checkCanFollowWaypoint = (
    * @param {number} index
    * @return {(number|*)[]|(*|number)[]}
    */
-  const getCoord = (index) =>
-    isH ? [coord[0], index] : [index, coord[1]]
+  const getCoord = (index) => (isH ? [coord[0], index] : [index, coord[1]])
 
   /**
    *  水平方向 检查水平方向都能通过 直到达到结束点开始点
@@ -98,14 +93,8 @@ export const checkCanFollowWaypoint = (
 
   for (let i = base, j = base; i >= limits[0] && j <= limits[1]; i--, j++) {
     if (
-      !canThrough(
-        grid.getRealPoint(getCoord(i)),
-        grid.getRealPoint(getCoord(i + 1))
-      ) ||
-        !canThrough(
-          grid.getRealPoint(getCoord(j)),
-          grid.getRealPoint(getCoord(j - 1))
-        )
+      !canThrough(grid.getRealPoint(getCoord(i)), grid.getRealPoint(getCoord(i + 1))) ||
+      !canThrough(grid.getRealPoint(getCoord(j)), grid.getRealPoint(getCoord(j - 1)))
     ) {
       return false
     }
@@ -120,11 +109,7 @@ export const checkCanFollowWaypoint = (
  * @param {Direction} direction
  * @return {boolean}
  */
-export const checkDirectionIsValid = (
-  from,
-  to,
-  direction
-) => {
+export const checkDirectionIsValid = (from, to, direction) => {
   const d = subV(to, from)
 
   let disabled = false
@@ -177,18 +162,13 @@ export const getMoveDelta = (dir, first) => {
  * @return {boolean}
  */
 export const inView = (point, box) => {
-  return (
-    point[0] >= box[0][0] &&
-        point[0] <= box[1][0] &&
-        point[1] >= box[0][1] &&
-        point[1] <= box[2][1]
-  )
+  return point[0] >= box[0][0] && point[0] <= box[1][0] && point[1] >= box[0][1] && point[1] <= box[2][1]
 }
 
 const getPointConstraintsInfo = (start, end) => {
   return [start, end].map((item) => ({
     ...item,
-    endpoint: item.origin.slice()
+    endpoint: item.origin.slice(),
   }))
 }
 
@@ -209,14 +189,12 @@ const isHorizontal = (dir) => {
 export const isOppositeDirection = (dirs) => {
   const list = [
     [Direction.LEFT, Direction.RIGHT],
-    [Direction.TOP, Direction.BOTTOM]
+    [Direction.TOP, Direction.BOTTOM],
   ]
 
   const conditions = [[...dirs].reverse(), dirs]
 
-  return list.some((item) =>
-    conditions.some((source) => source[0] === item[0] && source[1] === item[1])
-  )
+  return list.some((item) => conditions.some((source) => source[0] === item[0] && source[1] === item[1]))
 }
 
 /**
@@ -229,14 +207,7 @@ export const isOppositeDirection = (dirs) => {
  * @param {number} index
  * @return {boolean}
  */
-const checkIsContained = (
-  origin,
-  box,
-  axis,
-  otherBox,
-  otherAxis,
-  index
-) => {
+const checkIsContained = (origin, box, axis, otherBox, otherAxis, index) => {
   // 没边界比较时不需要考虑是否包含
   if (!otherBox) {
     return true
@@ -245,18 +216,13 @@ const checkIsContained = (
   // 这里不能用 <= >=
   if (box && otherBox) {
     return axis.some(
-      (j) =>
-        box[j][index] > otherBox[otherAxis[0]][index] &&
-                box[j][index] < otherBox[otherAxis[1]][index]
+      (j) => box[j][index] > otherBox[otherAxis[0]][index] && box[j][index] < otherBox[otherAxis[1]][index],
     )
   }
 
   // 比存在
 
-  return (
-    origin[index] > otherBox[otherAxis[0]][index] &&
-        origin[index] < otherBox[otherAxis[1]][index]
-  )
+  return origin[index] > otherBox[otherAxis[0]][index] && origin[index] < otherBox[otherAxis[1]][index]
 }
 
 /**
@@ -267,12 +233,7 @@ const checkIsContained = (
  * @param isCovered
  * @return
  */
-export const getBoxConstraintsInfo = (
-  start,
-  end,
-  minDist,
-  isCovered
-) => {
+export const getBoxConstraintsInfo = (start, end, minDist, isCovered) => {
   if (!start.box && !end.box) {
     return getPointConstraintsInfo(start, end)
   }
@@ -281,14 +242,14 @@ export const getBoxConstraintsInfo = (
     return Object.assign(
       {
         ...cloneDeep(item),
-        endpoint: cloneDeep(item.origin)
+        endpoint: cloneDeep(item.origin),
       },
       item.box
         ? {
-          boundaryBox: extendBox(item.box, minDist),
-          originBoundaryBox: extendBox(item.box, minDist)
-        }
-        : {}
+            boundaryBox: extendBox(item.box, minDist),
+            originBoundaryBox: extendBox(item.box, minDist),
+          }
+        : {},
     )
   })
 
@@ -296,27 +257,27 @@ export const getBoxConstraintsInfo = (
     [Direction.TOP]: -1,
     [Direction.LEFT]: -1,
     [Direction.RIGHT]: 1,
-    [Direction.BOTTOM]: 1
+    [Direction.BOTTOM]: 1,
   }
   // : Record<Direction, [number[], number[]]>
   const axisMap = {
     // [from, compared]
     [Direction.TOP]: [
       [0, 1],
-      [3, 2]
+      [3, 2],
     ],
     [Direction.LEFT]: [
       [0, 3],
-      [1, 2]
+      [1, 2],
     ],
     [Direction.RIGHT]: [
       [1, 2],
-      [0, 3]
+      [0, 3],
     ],
     [Direction.BOTTOM]: [
       [3, 2],
-      [0, 1]
-    ]
+      [0, 1],
+    ],
   }
 
   // 内部相交直接按内部查找
@@ -333,72 +294,65 @@ export const getBoxConstraintsInfo = (
 
   const allDirs = Object.keys(deltaMap)
 
-  list.forEach(
-    (
-      { box, direction, endpoint, origin, boundaryBox, originBoundaryBox },
-      i
-    ) => {
-      allDirs.forEach((dir) => {
-        const axis = axisMap[dir]
-        const other = list[(i + 1) % 2]
-        const [currentAxis, otherAxis] = axis
-        const currentD = deltaMap[dir]
-        const index = isHorizontal(dir) ? 0 : 1
-        const restIndex = index === 0 ? 1 : 0
+  list.forEach(({ box, direction, endpoint, origin, boundaryBox, originBoundaryBox }, i) => {
+    allDirs.forEach((dir) => {
+      const axis = axisMap[dir]
+      const other = list[(i + 1) % 2]
+      const [currentAxis, otherAxis] = axis
+      const currentD = deltaMap[dir]
+      const index = isHorizontal(dir) ? 0 : 1
+      const restIndex = index === 0 ? 1 : 0
 
-        const contained = checkIsContained(
-          origin,
-          originBoundaryBox,
-          currentAxis,
-          other.originBoundaryBox,
-          otherAxis,
-          restIndex
-        )
+      const contained = checkIsContained(
+        origin,
+        originBoundaryBox,
+        currentAxis,
+        other.originBoundaryBox,
+        otherAxis,
+        restIndex,
+      )
 
-        const base = box ? box[currentAxis[0]] : origin
+      const base = box ? box[currentAxis[0]] : origin
 
-        const dist = other.box
-          ? other.box[otherAxis[0]][index] - base[index]
-          : other.origin[index] - base[index]
-        // 点在其它何盒子直接相连 不需要考虑
-        const d = dist > 0 ? 1 : -1
-        const pointDist = Math.abs(dist) / 2
+      const dist = other.box ? other.box[otherAxis[0]][index] - base[index] : other.origin[index] - base[index]
+      // 点在其它何盒子直接相连 不需要考虑
+      const d = dist > 0 ? 1 : -1
+      const pointDist = Math.abs(dist) / 2
 
-        const shouldAdjust = d === currentD && Math.abs(dist) < minDist * 2
-        // 方向是当前方向时且另外一个盒子存在，那么包含才需要调整 padding
-        const needContained = contained
+      const shouldAdjust = d === currentD && Math.abs(dist) < minDist * 2
+      // 方向是当前方向时且另外一个盒子存在，那么包含才需要调整 padding
+      const needContained = contained
 
-        /**
-                 * 方向相对
-                 * 比如 [ ] - [ ]
-                 *     current => other
-                 * [ ] current
-                 *  |
-                 * [ ] other
-                 */
-        if (needContained && shouldAdjust) {
-          if (box && boundaryBox) {
-            currentAxis.forEach((a) => {
-              boundaryBox[a][index] = box[a][index] + currentD * pointDist
-            })
-          }
-
-          if (other.box) {
-            otherAxis.forEach((a) => {
-              // 对于被比较的盒子 距离增加相反
-              other.boundaryBox[a][index] = other.box[a][index] + currentD * pointDist * -1
-            })
-          }
-
-          if (dir === direction) {
-            endpoint[index] = origin[index] + currentD * pointDist
-          }
-        } else if (dir === direction) {
-          endpoint[index] = origin[index] + minDist * currentD
+      /**
+       * 方向相对
+       * 比如 [ ] - [ ]
+       *     current => other
+       * [ ] current
+       *  |
+       * [ ] other
+       */
+      if (needContained && shouldAdjust) {
+        if (box && boundaryBox) {
+          currentAxis.forEach((a) => {
+            boundaryBox[a][index] = box[a][index] + currentD * pointDist
+          })
         }
-      })
-    }
-  )
+
+        if (other.box) {
+          otherAxis.forEach((a) => {
+            // 对于被比较的盒子 距离增加相反
+            other.boundaryBox[a][index] = other.box[a][index] + currentD * pointDist * -1
+          })
+        }
+
+        if (dir === direction) {
+          endpoint[index] = origin[index] + currentD * pointDist
+        }
+      } else if (dir === direction) {
+        endpoint[index] = origin[index] + minDist * currentD
+      }
+    })
+  })
 
   return list
 }
