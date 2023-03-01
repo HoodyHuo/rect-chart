@@ -488,6 +488,7 @@ class Workbench {
    */
   _initResizeBox() {
     const resizeBox = new EditShape({
+      scaleTool:this._scaleTool,
       onSizeChange: this._onSizeChange.bind(this),
     })
     resizeBox.hide()
