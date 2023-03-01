@@ -9,6 +9,8 @@ import Line from './shape/Line'
 import { calculateScalePosition, createPath } from './orth'
 import { culaPosition, subDirection } from './shape/tool'
 import { inBox } from './orth/util'
+import { alignBorder } from './shape/tool'
+import { findParent } from './util'
 import { WorkbenchMode } from './shape/Const'
 import { calcContentRect, fixSize, getCanvasCopyFromZrender } from './util'
 import BoxSelection from './box-selection'
@@ -319,7 +321,7 @@ class Workbench {
   _onCreateLine(startBox, direction, position) {
     const xy = this._scaleTool.transformCoordToLocal(position.x, position.y)
 
-    const path = createPath(
+    let path = createPath(
       {
         x: startBox.x,
         y: startBox.y,
@@ -365,14 +367,27 @@ class Workbench {
    * 当鼠标拖拽，调整连线
    * @param {NodeBox} startBox 触发的节点
    * @param {Direction} startDirection 起始方向
-   * @param {{x:number,y:number}} position 鼠标位置
-   * @param {NodeBox} endBox 触发的节点
-   * @param {Direction} endDirection 起始方向
+   * @param  event 鼠标事件
    *
    * @private
    */
-  _onMoveLine(startBox, startDirection, position, endBox, endDirection) {
+  _onMoveLine(startBox, startDirection, event) {
+    //如果没有线正在连接则继续处理
     if (this._tempLine == null) return
+    const xy = this._scaleTool.transformCoordToLocal(event.offsetX,event.offsetY)
+    let position = {x:xy[0],y:xy[1]}
+    /** 定位当前落在那个节点实例上 */
+    let endBox = null
+    let endDirection = null
+    if (event.topTarget) {
+      endBox = findParent(event.topTarget)
+      if (endBox !== null && endBox !== startBox && endBox instanceof NodeBox) {
+        const endAl = alignBorder(position, endBox)
+        endDirection = endAl.direction
+          position = endAl.pos
+      }
+    }
+    //对鼠标移动位置进行缩放转换
     const path = createPath(
       {
         x: startBox.x,
@@ -488,7 +503,7 @@ class Workbench {
    */
   _initResizeBox() {
     const resizeBox = new EditShape({
-      scaleTool:this._scaleTool,
+      scaleTool: this._scaleTool,
       onSizeChange: this._onSizeChange.bind(this),
     })
     resizeBox.hide()

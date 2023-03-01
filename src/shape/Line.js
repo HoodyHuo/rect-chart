@@ -111,15 +111,6 @@ class Line extends zrender.Group {
       },
       draggable: false,
     })
-    // 设置动态调整虚线间隔，达到流动的感觉0
-    /** setInterval(() => {
-        if (this.style.lineDashOffset === 1) {
-          this.style.lineDashOffset = 16
-        } else {
-          this.style.lineDashOffset--
-        }
-        this.dirty()
-      }, LineConfig.lineSpeed) */
     this.lineView
       .animate('style', true)
       .when(0, {
@@ -138,8 +129,8 @@ class Line extends zrender.Group {
         fill: LineConfig.color[this.state] || LineConfig.color['default'],
       },
       shape: {
-        x: this.path[this.path.length - 1][0],
-        y: this.path[this.path.length - 1][1],
+        x: this.path ? this.path[this.path.length - 1][0] : -100000,
+        y: this.path ? this.path[this.path.length - 1][1] : -100000,
         direction: Direction.getReverse(this.to ? this.to.direction || Direction.TOP : Direction.TOP),
       },
     })
@@ -280,10 +271,12 @@ class Line extends zrender.Group {
     this.endPoint.dirty()
 
     this.lineView.updatePath(path)
-    this.arrow.updatePosition(
-      { x: path[path.length - 1][0], y: path[path.length - 1][1] },
-      Direction.getReverse(this.to.direction),
-    )
+    if(this.to){
+      this.arrow.updatePosition(
+        { x: path[path.length - 1][0], y: path[path.length - 1][1] },
+        Direction.getReverse(this.to?.direction ),
+      )
+    }
     this._removeLineHandler()
     this._createLineHandler()
   }
