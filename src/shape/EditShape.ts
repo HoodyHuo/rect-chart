@@ -234,8 +234,8 @@ class EditShape extends Group {
   /**
    * Handle resizeBox show
    * @param { Nodebox } box
-   * @ts-ignore
-   */
+   * 
+   *///@ts-ignore
   show(box: NodeBox | null ):void {
     if (!box) return
     this.parentBox = box
