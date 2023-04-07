@@ -3,19 +3,22 @@ import Config from '../Config'
 import { ZLevel } from './Const'
 
 const LineConfig = Config.Line
-
-const zrender = require('zrender')
+import { Path} from 'zrender'
+import PathProxy from 'zrender/lib/core/PathProxy'
+import { Dictionary } from 'zrender/lib/core/types'
 
 /**
  * 箭头图形
  */
-class Arrow extends zrender.Path {
+class Arrow extends  Path {
   shape = {
     size: LineConfig.ArrowSize,
     direction: Direction.TOP,
     x: 0,
     y: 0,
   }
+
+  
 
   /**
    *
@@ -27,7 +30,7 @@ class Arrow extends zrender.Path {
    * @param {number} opts.shape.y
    * @param {Direction} opts.shape.direction
    */
-  constructor(opts) {
+  constructor(opts:any) {
     opts.shape.size = opts.shape.size || LineConfig.ArrowSize
     opts.zlevel = ZLevel.LINE
     opts.style.lineWidth = 1
@@ -45,7 +48,7 @@ class Arrow extends zrender.Path {
    * @param {Direction} shapeCfg.direction
    * @param {boolean} inBatch
    */
-  buildPath(ctx, shapeCfg, inBatch) {
+  buildPath(ctx:PathProxy | CanvasRenderingContext2D, shapeCfg:Dictionary<any>, inBatch:boolean) {
     ctx.moveTo(shapeCfg.x, shapeCfg.y)
     switch (shapeCfg.direction) {
       case Direction.TOP:
@@ -76,7 +79,7 @@ class Arrow extends zrender.Path {
    * zrender color
    * @param color
    */
-  updateColor(color) {
+  updateColor(color:string) {
     this.style.stroke = color
     this.style.fill = color
     this.dirty()
@@ -87,9 +90,9 @@ class Arrow extends zrender.Path {
    * @param {{x:number,y:number}} pos
    * @param {Direction} dir
    */
-  updatePosition({ x, y }, dir) {
-    this.shape.x = x
-    this.shape.y = y
+  updatePosition(pos:{ x:number, y:number }, dir:string) {
+    this.shape.x = pos.x
+    this.shape.y = pos.y
     this.shape.direction = dir
     this.dirty()
   }
