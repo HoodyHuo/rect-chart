@@ -5,7 +5,7 @@ import LinePath from './LinePath'
 import Config from '../Config'
 import { calculatePosition, calculateScalePosition, createPath, getDirection } from '../orth'
 import { WorkbenchMode, ZLevel } from '../shape/Const'
-import Arrow from '../shape/Arrow'
+import Arrow from './Arrow'
 import { Direction } from '../orth/Constant'
 
 const LineConfig = Config.Line
